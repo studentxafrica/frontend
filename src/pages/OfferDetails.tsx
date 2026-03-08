@@ -12,7 +12,6 @@ import { Clock, Code, ChevronLeft, QrCode, Copy, Link2, Bookmark, Share2, Loader
 import axiosInstance from "@/api/axios";
 import { Coupon, CouponClaimResponse } from "@/types/coupon";
 import { UsageType, ClaimAvailability, UsageStats } from "@/types/offer";
-import { set } from "date-fns";
 import { ConfirmModal } from "@/components/confirmModal";
 import { useConfirmModal } from "@/hooks/use-confirm-modal";
 
@@ -112,18 +111,18 @@ const OfferDetails: React.FC = () => {
 
   const fetchUsageInfo = async () => {
     if (!id) return;
-    
+
     try {
       setLoadingUsageInfo(true);
       const [usageResponse, availabilityResponse] = await Promise.all([
         axiosInstance.get(`/offer/${id}/usage-stats`),
         axiosInstance.get(`/offer/${id}/available-claims`)
       ]);
-      
+
       if (usageResponse.data) {
         setUsageStats(usageResponse.data.data.usage_stats);
       }
-      
+
       if (availabilityResponse.data) {
         setClaimAvailability(availabilityResponse.data.data);
       }
@@ -143,7 +142,7 @@ const OfferDetails: React.FC = () => {
       }
       const { data } = couponData.data;
       setOffer(data);
-      
+
       // Fetch usage info after getting offer
       await fetchUsageInfo();
     } catch (error) {
@@ -168,10 +167,10 @@ const OfferDetails: React.FC = () => {
       setCoupon(data);
       setIsRevealed(true);
       offer.coupons.total -= 1;
-      
+
       // Update usage stats after successful claim
       await fetchUsageInfo();
-      
+
       toast({
         title: message || "Coupon generated",
         description: description || "Coupon code has been generated successfully",
@@ -264,7 +263,7 @@ const OfferDetails: React.FC = () => {
   const getUsageTypeInfo = (usageType: UsageType) => {
     switch (usageType) {
       case UsageType.SINGLE_USE:
-        return { icon: Users, label: "One-time use", color: "bg-blue-100 text-blue-700" };
+        return { icon: Users, label: "Your claimed coupon can only be used once", color: "bg-blue-100 text-blue-700" };
       case UsageType.MULTI_USE:
         return { icon: Repeat, label: `Up to ${offer?.max_claims_per_user}x`, color: "bg-green-100 text-green-700" };
       case UsageType.UNLIMITED:
@@ -281,7 +280,7 @@ const OfferDetails: React.FC = () => {
     const date = new Date(dateString);
     const now = new Date();
     const diffHours = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffHours <= 24) {
       return `${diffHours} hours`;
     } else {
@@ -328,10 +327,10 @@ const OfferDetails: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center bg-background-lighter">
       <Header />
       <ConfirmModal
-          isOpen={alert}
-          onClose={() => setAlert(false)}
-          {...modalProps}
-        />
+        isOpen={alert}
+        onClose={() => setAlert(false)}
+        {...modalProps}
+      />
       <main className="flex-grow w-full mx-auto px-4 py-6 pt-20 sm:pt-24">
         {/* Back button */}
         <div className="mb-6">
@@ -423,7 +422,7 @@ const OfferDetails: React.FC = () => {
                                 <p className="text-text-secondary text-sm">{usageTypeInfo.label}</p>
                                 {offer.cooldown_period_hours && (
                                   <p className="text-xs text-text-tertiary">
-                                    {offer.cooldown_period_hours}h cooldown
+                                    This offer is currently unavailable come back after {offer.cooldown_period_hours} {offer.cooldown_period_hours === 1 ? 'hour' : 'hours'}.
                                   </p>
                                 )}
                               </div>
@@ -481,7 +480,7 @@ const OfferDetails: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <Repeat className="h-4 w-4 text-blue-700" />
                       <p className="text-sm font-medium text-blue-700">
-                        {claimAvailability.remaining_claims} claims remaining for you
+                        {claimAvailability.remaining_claims} {claimAvailability.remaining_claims === 1 ? 'claim' : 'claims'} remaining for you
                       </p>
                     </div>
                   </div>

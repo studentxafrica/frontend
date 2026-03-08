@@ -89,65 +89,6 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
   const [copied, setIsCopied] = useState(false);
 
   const coupons: Coupon[] = user.coupons;
-  // [
-  //   {
-  //     id: '1',
-  //     code: 'STUDENT20',
-  //     title: '20% Off Sneakers',
-  //     brand: 'Nike',
-  //     brandLogo: 'https://cdn.simpleicons.org/nike/000000',
-  //     discount: '20%',
-  //     discountType: 'percentage',
-  //     description: 'Get 20% off on all sneakers and athletic wear',
-  //     expiryDate: '2024-12-31',
-  //     status: 'active',
-  //     category: 'Fashion',
-  //     savings: 45.99
-  //   },
-  //   {
-  //     id: '2',
-  //     code: 'PREMIUM50',
-  //     title: 'Spotify Premium Student',
-  //     brand: 'Spotify',
-  //     brandLogo: 'https://cdn.simpleicons.org/spotify/1DB954',
-  //     discount: '50%',
-  //     discountType: 'percentage',
-  //     description: '50% off Spotify Premium for students',
-  //     expiryDate: '2024-12-31',
-  //     status: 'used',
-  //     category: 'Entertainment',
-  //     savings: 59.94,
-  //     usedDate: '2024-11-15',
-  //     originalPrice: 119.88,
-  //     finalPrice: 59.94
-  //   },
-  //   {
-  //     id: '3',
-  //     code: 'FREESHIP',
-  //     title: 'Free Shipping',
-  //     brand: 'Amazon',
-  //     brandLogo: 'https://cdn.simpleicons.org/amazon/FF9900',
-  //     discount: 'Free Shipping',
-  //     discountType: 'free_shipping',
-  //     description: 'Free shipping on orders over $25',
-  //     expiryDate: '2024-11-30',
-  //     status: 'expired',
-  //     category: 'Shopping',
-  //   },
-  //   {
-  //     id: '4',
-  //     code: 'STUDENT10',
-  //     title: '$10 Off First Order',
-  //     brand: 'Uber Eats',
-  //     brandLogo: 'https://cdn.simpleicons.org/uber/000000',
-  //     discount: '$10',
-  //     discountType: 'fixed',
-  //     description: '$10 off your first food delivery order',
-  //     expiryDate: '2025-01-15',
-  //     status: 'active',
-  //     category: 'Food',
-  //   }
-  // ];
 
   const activeCoupons = coupons.filter(coupon => coupon.status === 'active');
   const usedCoupons = coupons.filter(coupon => coupon.status === 'redeemed');
@@ -230,163 +171,148 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
 
   const renderCouponCard = (coupon: Coupon) => (
     <Card key={coupon.id} className="border-neutral-lighter hover:border-brand-primary/30 transition-all">
-      <CardContent className="p-6">
-        <div className="flex items-start gap-4">
+      <CardContent className="p-4 sm:p-6">
+        {/* Top row: Logo + Title/Brand + Action button */}
+        <div className="flex items-start gap-3 sm:gap-4">
           {/* Brand Logo */}
-          <Avatar className="w-12 h-12 rounded-xl border border-neutral-lighter">
+          <Avatar className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl border border-neutral-lighter shrink-0">
             <AvatarImage
               src={coupon.brandLogo}
               alt={coupon.brand}
               className="object-cover"
             />
-            <AvatarFallback className="bg-background-subtle rounded-xl">
+            <AvatarFallback className="bg-background-subtle rounded-xl text-sm">
               {coupon.brand.substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
 
-          {/* Content */}
-          <div className="flex-1">
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <h3 className="text-xl font-semibold text-text-primary mb-1">{coupon.title}</h3>
-                <p className="text-sm text-neutral-medium">{coupon.brand}</p>
-              </div>
-            </div>
-
-            <p className="text-sm text-neutral-medium mb-3">{coupon.description}</p>
-
-            {/* Coupon Code */}
-            <div className="flex items-center gap-2 mb-3">
-              <div className="bg-brand-primary/10 border-2 border-dashed border-brand-primary/30 rounded-lg px-3 py-2 flex items-center gap-2">
-                <span className="font-mono font-bold text-brand-primary">{coupon.code}</span>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 hover:bg-brand-primary/20 outline-none focus:outline-none"
-                  onClick={() => copyToClipboard(coupon.code)}
-                >
-                  {copied ? <CheckCircle className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
-                </Button>
-              </div>
-              <div className="flex items-center gap-1 text-brand-primary font-semibold">
-                {getDiscountIcon(coupon.discountType)}
-                <span>{coupon.discount}</span>
-              </div>
-            </div>
-
-            {/* Usage Type and Stats */}
-            {(coupon.offer?.usage_type || coupon.usage_stats) && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                {/* Usage type badge */}
-                {coupon.offer?.usage_type && (
-                  <Badge variant="outline" className="text-xs">
-                    {getUsageTypeIcon(coupon.offer.usage_type)}
-                    <span className="ml-1">
-                      {getUsageTypeLabel(coupon.offer.usage_type, coupon.offer.max_claims_per_user)}
-                    </span>
-                  </Badge>
-                )}
-
-                {/* Usage statistics */}
-                {coupon.usage_stats && (
-                  <Badge variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    {coupon.usage_stats.total_claims} claims
-                  </Badge>
-                )}
-
-                {/* Tier information */}
-                {coupon.tier_info && (
-                  <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-200 text-yellow-700">
-                    <Trophy className="h-3 w-3 mr-1" />
-                    {coupon.tier_info.tier_name}
-                  </Badge>
-                )}
-              </div>
-            )}
-
-            {/* Metadata */}
-            <div className="flex items-center justify-between text-xs text-neutral-medium">
-              <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
-                <div className="flex items-center gap-1 col-span-1">
-                  <Calendar className="h-3 w-3" />
-                  <span>Expires {formatDate(coupon.expiryDate)}</span>
-                </div>
-
-              </div>
-              <Badge variant="outline" className="text-xs">
-                {coupon.category.name}
-              </Badge>
-            </div>
-
-            {/* Used Coupon Details */}
-            {coupon.status === 'redeemed' && coupon.usedDate && (
-              <div className="mt-3 p-3 bg-brand-primary/5 rounded-lg border border-brand-primary/10">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-neutral-medium">Used on {formatDate(coupon.usedDate)}</span>
-                  {coupon.originalPrice && coupon.finalPrice && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-neutral-medium line-through">${coupon.originalPrice}</span>
-                      <span className="text-success font-semibold">${coupon.finalPrice}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+          {/* Title + Brand */}
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base sm:text-xl font-semibold text-text-primary truncate">{coupon.title}</h3>
+            <p className="text-sm text-neutral-medium">{coupon.brand}</p>
           </div>
 
-          {/* Ways to claim dialog */}
-
-
-          {/* Actions */}
-          <div className="flex flex-col gap-2">
+          {/* Action button — always visible top-right */}
+          <div className="shrink-0">
             {coupon.status === 'active' && (
-              <>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button size="sm" className="bg-brand-primary text-white hover:bg-brand-primary/90">
-                      <ExternalLink className="h-3 w-3 mr-1 " />
-                      Redeem
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-lg">
-                    <DialogHeader>
-                      <DialogTitle>How to Claim</DialogTitle>
-                      <DialogDescription>
-                        Here are the steps to use this coupon:
-                      </DialogDescription>
-                    </DialogHeader>
-                    <Card className="border-neutral-lighter mb-4">
-                      <CardContent className="p-4">
-                        <ul className="list-disc pl-5 space-y-2 text-sm text-neutral-medium">
-                          {coupon.redemptionType === 'online' ? (
-                            <>
-                              <li>Visit the <strong>{coupon.brand}</strong> website or app.</li>
-                              <li>Enter the code <span className="font-mono font-bold">{coupon.code}</span> at checkout.</li>
-                              <li>Enjoy your discount!</li>
-                            </>
-                          ) : (
-                            <>
-                              <li>Visit a <strong>{coupon.brand}</strong> store near you.</li>
-                              <li>Show the coupon code <span className="font-mono font-bold">{coupon.code}</span> to the cashier.</li>
-                              <li>Enjoy your discount!</li>
-                            </>
-                          )}
-                        </ul>
-                      </CardContent>
-                    </Card>
-                  </DialogContent>
-                </Dialog>
-              </>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="bg-brand-primary text-white hover:bg-brand-primary/90">
+                    <ExternalLink className="h-3 w-3 sm:mr-1" />
+                    <span className="hidden sm:inline">Redeem</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle>How to Claim</DialogTitle>
+                    <DialogDescription>
+                      Here are the steps to use this coupon:
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Card className="border-neutral-lighter mb-4">
+                    <CardContent className="p-4">
+                      <ul className="list-disc pl-5 space-y-2 text-sm text-neutral-medium">
+                        {coupon.redemptionType === 'online' ? (
+                          <>
+                            <li>Visit the <strong>{coupon.brand}</strong> website or app.</li>
+                            <li>Enter the code <span className="font-mono font-bold">{coupon.code}</span> at checkout.</li>
+                            <li>Enjoy your discount!</li>
+                          </>
+                        ) : (
+                          <>
+                            <li>Visit a <strong>{coupon.brand}</strong> store near you.</li>
+                            <li>Show the coupon code <span className="font-mono font-bold">{coupon.code}</span> to the cashier.</li>
+                            <li>Enjoy your discount!</li>
+                          </>
+                        )}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </DialogContent>
+              </Dialog>
             )}
             {coupon.status === 'redeemed' && (
               <Button size="sm" variant="outline">
-                <Eye className="h-3 w-3 mr-1" />
-                <span className='hidden sm:inline'>View Details</span>
+                <Eye className="h-3 w-3 sm:mr-1" />
+                <span className="hidden sm:inline">View Details</span>
               </Button>
             )}
           </div>
         </div>
+
+        {/* Description */}
+        <p className="text-sm text-neutral-medium mt-3 mb-3">{coupon.description}</p>
+
+        {/* Coupon Code + Discount */}
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <div className="bg-brand-primary/10 border-2 border-dashed border-brand-primary/30 rounded-lg px-3 py-1.5 flex items-center gap-2">
+            <span className="font-mono font-bold text-brand-primary text-sm">{coupon.code}</span>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-6 w-6 hover:bg-brand-primary/20 outline-none focus:outline-none"
+              onClick={() => copyToClipboard(coupon.code)}
+            >
+              {copied ? <CheckCircle className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
+            </Button>
+          </div>
+          <div className="flex items-center gap-1 text-brand-primary font-semibold text-sm">
+            {getDiscountIcon(coupon.discountType)}
+            <span>{coupon.discount}</span>
+          </div>
+        </div>
+
+        {/* Usage Type and Stats */}
+        {(coupon.offer?.usage_type || coupon.usage_stats) && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {coupon.offer?.usage_type && (
+              <Badge variant="outline" className="text-xs">
+                {getUsageTypeIcon(coupon.offer.usage_type)}
+                <span className="ml-1">
+                  {getUsageTypeLabel(coupon.offer.usage_type, coupon.offer.max_claims_per_user)}
+                </span>
+              </Badge>
+            )}
+            {coupon.usage_stats && (
+              <Badge variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
+                <TrendingUp className="h-3 w-3 mr-1" />
+                {coupon.usage_stats.total_claims} claims
+              </Badge>
+            )}
+            {coupon.tier_info && (
+              <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-200 text-yellow-700">
+                <Trophy className="h-3 w-3 mr-1" />
+                {coupon.tier_info.tier_name}
+              </Badge>
+            )}
+          </div>
+        )}
+
+        {/* Metadata: Expiry + Category */}
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-neutral-medium">
+          <div className="flex items-center gap-1">
+            <Calendar className="h-3 w-3 shrink-0" />
+            <span>Expires {formatDate(coupon.expiryDate)}</span>
+          </div>
+          <Badge variant="outline" className="text-xs">
+            {coupon.category.name}
+          </Badge>
+        </div>
+
+        {/* Used Coupon Details */}
+        {coupon.status === 'redeemed' && coupon.usedDate && (
+          <div className="mt-3 p-3 bg-brand-primary/5 rounded-lg border border-brand-primary/10">
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span className="text-neutral-medium">Used on {formatDate(coupon.usedDate)}</span>
+              {coupon.originalPrice && coupon.finalPrice && (
+                <div className="flex items-center gap-2">
+                  <span className="text-neutral-medium line-through">${coupon.originalPrice}</span>
+                  <span className="text-success font-semibold">${coupon.finalPrice}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

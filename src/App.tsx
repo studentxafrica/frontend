@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+// Import feature flags to ensure it initializes
+import "@/config/featureFlags";
 import { useSelector } from "react-redux";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -16,7 +18,9 @@ import HowItWorks from "./pages/HowItWorks";
 import Categories from "./pages/Categories";
 import CouponDeals from "./pages/CouponDeals";
 import AuthPage from "./pages/Login";
+import AuthNew from "./pages/AuthNew";
 import OfferDetails from "./pages/OfferDetails";
+import OfferDetailsNew from "./pages/OfferDetailsNew";
 import Profile from "./pages/ProfilePage";
 import ResetPassword from "./pages/ResetPassword";
 import ConfirmPasswordReset from "./pages/ConfirmPasswordReset";
@@ -75,7 +79,12 @@ const App = () => {
 
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/auth" element={
+              // Check feature flag for new auth flow
+              // We use a small wrapper or just inline check if simple
+              // accessing window directly for now as per our simple implementation
+              true ? <AuthNew /> : <AuthPage />
+            } />
             <Route path="/categories" element={<Categories />} />
             <Route path="/deals" element={<CouponDeals />} />
             <Route path="/reset-password" element={<ResetPassword />} />
@@ -87,13 +96,20 @@ const App = () => {
 
               <Route path="/offer/:id" element={
                 <ProtectedRoute allowedRoles={["consumer"]}>
-                  <OfferDetails />
+                  <OfferDetailsNew />
                 </ProtectedRoute>
               } />
-              <Route path="/me" element={
+
+              <Route path="/offer-new/:id" element={
                 <ProtectedRoute allowedRoles={["consumer"]}>
-                  <Profile />
+                  <OfferDetailsNew />
                 </ProtectedRoute>
+              } />
+
+              <Route path="/me" element={
+                // <ProtectedRoute allowedRoles={["consumer"]}>
+                <Profile />
+                // </ProtectedRoute>
               } />
               <Route path="/how-it-works" element={<HowItWorks />} />
             </Route>

@@ -42,6 +42,8 @@ interface OnboardingWizardProps {
     major?: string;
     studentId?: string;
     graduationYear?: string;
+    isVerified?: boolean;
+    verificationStatus?: string; // 'pending' | 'in_progress' | 'approved' | 'rejected' | 'requested'
   };
 }
 
@@ -68,7 +70,32 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   onComplete,
   user
 }) => {
-  const [currentStep, setCurrentStep] = useState(0);
+  // Determine the initial step based on user's current state
+  const getInitialStep = () => {
+    const verificationStatus = (user.verificationStatus || 'pending').toLowerCase();
+    const isVerified = user.isVerified || verificationStatus === 'approved';
+    const isInReview = verificationStatus === 'in_progress';
+    
+    // If verified, go to complete step
+    if (isVerified) return 4; // 'complete' step
+    
+    // If in review, close wizard - nothing to do
+    if (isInReview) return -1; // Signal to not show wizard
+    
+    // Check if personal details are complete (dateOfBirth is required)
+    const hasRequiredPersonalDetails = !!(user.dateOfBirth);
+    if (!hasRequiredPersonalDetails) return 1; // 'personal' step
+    
+    // Check if student info is added (at least one field)
+    const hasStudentInfo = !!(user.major || user.studentId || user.graduationYear);
+    if (!hasStudentInfo) return 2; // 'student' step
+    
+    // If we have all info but not verified, go to verification step
+    return 3; // 'verification' step
+  };
+
+  const initialStep = getInitialStep();
+  const [currentStep, setCurrentStep] = useState(initialStep === -1 ? 0 : initialStep);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<OnboardingData>({
     phone: user.phone || '',
@@ -78,6 +105,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     studentId: user.studentId || '',
     graduationYear: user.graduationYear || ''
   });
+
+  // If verification is in review, auto-close the wizard
+  React.useEffect(() => {
+    if (initialStep === -1 && isOpen) {
+      toast({
+        title: 'Verification In Progress',
+        description: 'Your verification is currently being reviewed. We\'ll notify you once it\'s complete.',
+        variant: 'default'
+      });
+      onClose();
+    }
+  }, [initialStep, isOpen, onClose]);
 
   const progress = ((currentStep + 1) / STEPS.length) * 100;
 

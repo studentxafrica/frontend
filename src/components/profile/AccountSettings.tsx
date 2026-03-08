@@ -337,51 +337,17 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({ user }) => {
                 }
               </CardDescription>
             </div>
-
-            {/* Edit / Save / Cancel buttons */}
-            <div className="flex items-center gap-2">
-              {isEditing ? (
-                <>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCancelClick}
-                    disabled={saving}
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    form="profile-form"
-                    disabled={saving}
-                    className="bg-brand-primary hover:bg-brand-primary/90"
-                  >
-                    {saving ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Changes
-                      </>
-                    )}
-                  </Button>
-                </>
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleEditClick}
-                  className="hover:border-brand-primary hover:text-brand-primary"
-                >
-                  <Edit3 className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
-              )}
-            </div>
+            {!isEditing && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleEditClick}
+                className="hover:border-brand-primary hover:text-brand-primary"
+              >
+                <Edit3 className="h-4 w-4 mr-2" />
+                <span className='hidden md:inline'>Edit Profile</span>
+              </Button>
+            )}
           </div>
         </CardHeader>
 
@@ -598,22 +564,6 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({ user }) => {
               </div>
             </div>
 
-            {/* Bio Section */}
-            <div className="pt-6 border-t border-neutral-lighter">
-              <FormFieldWrapper label="Bio">
-                {isEditing ? (
-                  <Textarea
-                    {...register('bio')}
-                    placeholder="Tell us about yourself..."
-                    className="min-h-[100px]"
-                    disabled={saving}
-                  />
-                ) : (
-                  <DisplayValue value={currentValues.bio} placeholder="Add a bio to tell others about yourself" />
-                )}
-              </FormFieldWrapper>
-            </div>
-
             {/* Unsaved changes indicator */}
             {isEditing && isDirty && (
               <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 px-4 py-2 rounded-lg mt-6">
@@ -623,6 +573,50 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({ user }) => {
             )}
           </form>
         </CardContent>
+        {/* Edit / Save / Cancel buttons */}
+        <div className="flex items-center gap-2 m-4 justify-end">
+          {isEditing ? (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancelClick}
+                disabled={saving}
+              >
+                <X className="h-4 w-4 mr-2" />
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                form="profile-form"
+                disabled={saving}
+                className="bg-brand-primary hover:bg-brand-primary/90"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Changes
+                  </>
+                )}
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleEditClick}
+              className="hover:border-brand-primary hover:text-brand-primary"
+            >
+              <Edit3 className="h-4 w-4 mr-2" />
+              Edit Profile
+            </Button>
+          )}
+        </div>
       </Card>
 
       {/* Security Settings Card */}
@@ -726,26 +720,26 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({ user }) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-4 border border-neutral-lighter rounded-lg">
+          <div className="flex flex-col md:flex-row md:items-center justify-between p-4 border border-neutral-lighter rounded-lg">
             <div>
-              <h3 className="font-medium text-text-primary">Export Data</h3>
+              <h3 className="font-medium text-lg text-text-primary">Export Data</h3>
               <p className="text-sm text-neutral-medium">Request a copy of your data</p>
             </div>
-            <Button type="button" variant="outline" className="hover:border-brand-primary hover:text-brand-primary">
+            <Button type="button" variant="outline" className="hover:border-brand-primary hover:text-brand-primary mt-4 md:mt-0">
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
           </div>
 
-          <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg bg-destructive/5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between p-4 border border-destructive/20 rounded-lg bg-destructive/5">
             <div>
-              <h3 className="font-medium text-destructive flex items-center gap-2">
+              <h3 className="font-medium text-lg text-destructive flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4" />
                 Delete Account
               </h3>
               <p className="text-sm text-neutral-medium">Permanently delete your account and all data</p>
             </div>
-            <Button type="button" variant="destructive">
+            <Button className='mt-4 md:mt-0' type="button" variant="destructive">
               <Trash2 className="h-4 w-4 mr-2" />
               Delete Account
             </Button>

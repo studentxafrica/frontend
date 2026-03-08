@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
-  Heart,
   Search,
   Filter,
   Share2,
@@ -13,17 +12,15 @@ import {
   Trash2,
   Star,
   Calendar,
-  Tag,
-  TrendingUp,
   Clock,
   Bookmark,
+  Heart,
   Loader2
 } from "lucide-react";
 import axiosInstance from '@/api/axios';
 import { toast } from '@/hooks/use-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { useConfirmModal } from '@/hooks/use-confirm-modal';
-import { on } from 'events';
 import { ConfirmModal } from '../confirmModal';
 
 interface SavedDealsProps {
@@ -122,60 +119,6 @@ export const SavedDeals: React.FC<SavedDealsProps> = ({ user }) => {
   useEffect(() => {
     setSavedDeals(user.savedDeals || []);
   }, []);
-
-  // const savedDeals: SavedDeal[] = [
-  //   {
-  //     id: '1',
-  //     title: 'MacBook Air M2 Student Discount',
-  //     brand: 'Apple',
-  //     brandLogo: 'https://cdn.simpleicons.org/apple/000000',
-  //     discount: '10% Off',
-  //     description: 'Get 10% off MacBook Air M2 with student verification',
-  //     category: 'Technology',
-  //     originalPrice: 1199,
-  //     salePrice: 1079,
-  //     savings: 120,
-  //     expiryDate: '2024-12-31',
-  //     isLimited: false,
-  //     savedDate: '2024-11-10',
-  //     rating: 4.8,
-  //     verified: true
-  //   },
-  //   {
-  //     id: '2',
-  //     title: 'Premium Annual Subscription',
-  //     brand: 'Notion',
-  //     brandLogo: 'https://cdn.simpleicons.org/notion/000000',
-  //     discount: 'Free for Students',
-  //     description: 'Free Notion Pro for verified students',
-  //     category: 'Software',
-  //     originalPrice: 96,
-  //     salePrice: 0,
-  //     savings: 96,
-  //     expiryDate: '2025-06-01',
-  //     isLimited: true,
-  //     savedDate: '2024-11-08',
-  //     rating: 4.9,
-  //     verified: true
-  //   },
-  //   {
-  //     id: '3',
-  //     title: 'Student Meal Plan',
-  //     brand: 'Chipotle',
-  //     brandLogo: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=40&h=40&fit=crop&crop=center',
-  //     discount: '$5 Off',
-  //     description: '$5 off orders over $15 for students',
-  //     category: 'Food',
-  //     originalPrice: 15,
-  //     salePrice: 10,
-  //     savings: 5,
-  //     expiryDate: '2024-11-30',
-  //     isLimited: false,
-  //     savedDate: '2024-11-05',
-  //     rating: 4.3,
-  //     verified: true
-  //   }
-  // ];
 
   const categories = ['all', ...Array.from(new Set(savedDeals.map(deal => deal.category)))];
 
@@ -295,13 +238,6 @@ export const SavedDeals: React.FC<SavedDealsProps> = ({ user }) => {
                           <p className="text-sm text-neutral-medium">{deal.brand}</p>
                         </div>
                       </div>
-                      {/* <Button
-                        size="icon"
-                        variant="ghost"
-                        className="text-brand-primary hover:bg-brand-primary/10"
-                      >
-                        <Heart className="h-4 w-4 fill-current" />
-                      </Button> */}
                     </div>
 
                     {/* Discount and Savings */}
@@ -309,10 +245,6 @@ export const SavedDeals: React.FC<SavedDealsProps> = ({ user }) => {
                       <Badge className="bg-brand-primary/10 text-brand-primary border-brand-primary/20">
                         {deal.discount}
                       </Badge>
-                      {/* <div className="flex items-center gap-1 text-success text-sm font-medium">
-                        <TrendingUp className="h-3 w-3" />
-                        Save ${deal.savings}
-                      </div> */}
                       {deal.verified && (
                         <Badge variant="outline" className="text-xs">
                           <Star className="h-3 w-3 mr-1" />
@@ -324,12 +256,8 @@ export const SavedDeals: React.FC<SavedDealsProps> = ({ user }) => {
                     {/* Description */}
                     <p className="text-sm text-neutral-medium">{deal.description}</p>
 
-                    {/* Price Comparison */}
+                    {/* Category */}
                     <div className="flex items-center gap-2">
-                      {/* <span className="text-lg font-bold text-text-primary">${deal.salePrice}</span>
-                      {deal.originalPrice > deal.salePrice && (
-                        <span className="text-sm text-neutral-medium line-through">${deal.originalPrice}</span>
-                      )} */}
                       <Badge variant="outline" className="text-xs">
                         {deal.category}
                       </Badge>

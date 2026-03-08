@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+
 import {
   CheckCircle,
   AlertCircle,
@@ -10,7 +9,6 @@ import {
   School,
   Shield,
   Clock,
-  Star,
   Award,
   GraduationCap,
   ExternalLink,
@@ -20,7 +18,6 @@ import {
 import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import StudentVerificationModal from '../verification/ManualVerificationModal';
-import { LinearProgress } from '@mui/material';
 
 interface VerificationTasksProps {
   onChangeTab?: (tab: string) => void;
@@ -218,8 +215,7 @@ export const VerificationTasks: React.FC<VerificationTasksProps> = ({ user, onCh
       title: 'Complete Profile',
       description: 'Add student information on your profile to continue with verification',
       icon: School,
-      status: user.verificationLevel >= 90 ? 'completed' : 'pending',
-      points: 15,
+      status: user.verificationLevel >= 87 ? 'completed' : 'pending',
       required: false
     },
     {
@@ -234,49 +230,118 @@ export const VerificationTasks: React.FC<VerificationTasksProps> = ({ user, onCh
             : verificationStatus === 'completed' ? 'Your student status has been verified'
               : 'Your verification request was rejected.',
       icon: GraduationCap,
-      status: verificationStatus,
-      points: 50,
+      status: verificationStatus == 'completed' ? 'verified' : verificationStatus,
       required: true
     },
   ];
 
-  const getStatusIcon = (status: string) => {
+  const getStampConfig = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="h-5 w-5 text-success" />;
+        return {
+          label: 'COMPLETE',
+          color: 'text-emerald-600',
+          borderColor: 'border-emerald-600',
+          bgColor: 'bg-emerald-50',
+          rotation: '-rotate-12',
+          icon: <CheckCircle className="h-5 w-5" />,
+        };
+      case 'verified':
+        return {
+          label: 'VERIFIED',
+          color: 'text-emerald-600',
+          borderColor: 'border-emerald-600',
+          bgColor: 'bg-emerald-50',
+          rotation: '-rotate-12',
+          icon: <CheckCircle className="h-5 w-5" />,
+        };
       case 'in_progress':
-        return <RefreshCw className="h-5 w-5 text-warning animate-spin" />;
+        return {
+          label: 'IN REVIEW',
+          color: 'text-amber-600',
+          borderColor: 'border-amber-600',
+          bgColor: 'bg-amber-50',
+          rotation: '-rotate-6',
+          icon: <RefreshCw className="h-4 w-4 animate-spin" />,
+        };
       case 'pending':
-        return <Clock className="h-5 w-5 text-warning" />;
+        return {
+          label: 'PENDING',
+          color: 'text-amber-500',
+          borderColor: 'border-amber-500',
+          bgColor: 'bg-amber-50',
+          rotation: '-rotate-12',
+          icon: <Clock className="h-4 w-4" />,
+        };
       case 'failed':
-        return <XCircle className="h-5 w-5 text-destructive" />;
-      default:
-        return <AlertCircle className="h-5 w-5 text-neutral-medium" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-success/10 text-success border-success/20';
-      case 'in_progress':
-        return 'bg-warning/10 text-warning border-warning/20';
-      case 'pending':
-        return 'bg-warning/10 text-warning border-warning/20';
-      case 'failed':
-        return 'bg-destructive/10 text-destructive border-destructive/20';
+        return {
+          label: 'FAILED',
+          color: 'text-red-600',
+          borderColor: 'border-red-600',
+          bgColor: 'bg-red-50',
+          rotation: 'rotate-6',
+          icon: <XCircle className="h-4 w-4" />,
+        };
       case 'rejected':
-        return 'bg-destructive/10 text-destructive border-destructive/20';
+        return {
+          label: 'REJECTED',
+          color: 'text-red-600',
+          borderColor: 'border-red-600',
+          bgColor: 'bg-red-50',
+          rotation: '-rotate-12',
+          icon: <XCircle className="h-4 w-4" />,
+        };
+      case 'requested':
+        return {
+          label: 'ACTION REQ.',
+          color: 'text-blue-600',
+          borderColor: 'border-blue-600',
+          bgColor: 'bg-blue-50',
+          rotation: '-rotate-6',
+          icon: <Info className="h-4 w-4" />,
+        };
       default:
-        return 'bg-neutral-lighter text-neutral-medium border-neutral-lighter';
+        return {
+          label: 'UNKNOWN',
+          color: 'text-gray-500',
+          borderColor: 'border-gray-500',
+          bgColor: 'bg-gray-50',
+          rotation: '-rotate-12',
+          icon: <AlertCircle className="h-4 w-4" />,
+        };
     }
   };
 
-  const completedSteps = verificationSteps.filter(step => step.status === 'completed').length;
-  const totalPoints = verificationSteps.reduce((sum, step) =>
-    step.status === 'completed' ? sum + step.points : sum, 0
-  );
-  const maxPoints = verificationSteps.reduce((sum, step) => sum + step.points, 0);
+  const StatusStamp = ({ status }: { status: string }) => {
+    const config = getStampConfig(status);
+    return (
+      <div className={`absolute top-1/2 right-4 -translate-y-1/2 ${config.rotation} pointer-events-none z-10`}>
+        <div
+          className={`
+            w-20 h-20 rounded-full
+            flex flex-col items-center justify-center
+            ${config.bgColor} ${config.color} ${config.borderColor}
+            border-[3px] border-double
+            opacity-80
+          `}
+          style={{
+            boxShadow: `inset 0 0 0 3px currentColor`,
+            maskImage: 'url("data:image/svg+xml,%3Csvg viewBox=%270 0 200 200%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27noise%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.65%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23noise)%27/%3E%3C/svg%3E")',
+            maskSize: '150px',
+            maskComposite: 'intersect',
+            WebkitMaskComposite: 'source-in',
+          }}
+        >
+          <div className="mb-0.5">{config.icon}</div>
+          <span className="text-[9px] font-extrabold tracking-wider uppercase leading-tight text-center px-1">
+            {config.label}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  const completedSteps = verificationSteps.filter(step => step.status === 'completed' || step.status === 'verified').length;
 
   return (
     <div className="space-y-6">
@@ -307,10 +372,6 @@ export const VerificationTasks: React.FC<VerificationTasksProps> = ({ user, onCh
                 Verify your student status to access exclusive deals
               </CardDescription>
             </div>
-            <Badge className="bg-brand-primary/10 text-brand-primary border-brand-primary/20">
-              <Star className="h-3 w-3 mr-1" />
-              {totalPoints}/{maxPoints} points
-            </Badge>
           </div>
         </CardHeader>
         <CardContent>
@@ -332,14 +393,10 @@ export const VerificationTasks: React.FC<VerificationTasksProps> = ({ user, onCh
                 <p className="text-neutral-400">You've completed all verification steps. You can now browse all exclusive deals on StudentX</p>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-neutral-lighter">
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-neutral-lighter">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-brand-primary">{user.verificationLevel}%</div>
                   <div className="text-sm text-neutral-medium">Verified</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-success">{totalPoints}</div>
-                  <div className="text-sm text-neutral-medium">Trust Points</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-brand-accent">{completedSteps}</div>
@@ -356,35 +413,40 @@ export const VerificationTasks: React.FC<VerificationTasksProps> = ({ user, onCh
         {verificationSteps.map((step, index) => {
           const StepIcon = step.icon;
           return (
-            <Card key={step.id} className="border-neutral-lighter">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-xl bg-brand-primary/10 flex items-center justify-center">
-                      <StepIcon className="h-6 w-6 text-brand-primary" />
+            <Card key={step.id} className="border-neutral-lighter relative overflow-hidden">
+              {/* Stamp overlay */}
+              <StatusStamp status={step.status} />
+
+              <CardContent className="p-5 sm:p-6">
+                {/* Row 1: Icon | Title+Description */}
+                <div className="flex items-center gap-3 sm:gap-4">
+                  {/* Step Icon */}
+                  <div className="shrink-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-brand-primary/10 flex items-center justify-center">
+                      <StepIcon className="h-5 w-5 sm:h-6 sm:w-6 text-brand-primary" />
                     </div>
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-text-primary text-base">{step.title}</h3>
-                      <Badge className={getStatusColor(step.status)}>
-                        {step.status === 'completed' && 'Completed'}
-                        {step.status === 'in_progress' && 'In Progress'}
-                        {step.status === 'pending' && 'Pending'}
-                        {step.status === 'failed' && 'Failed'}
-                        {step.status === 'rejected' && 'Rejected'}
-                        {step.status === 'requested' && 'Requested'}
-                      </Badge>
+                  {/* Title + Description (stacked on lg, title-only on small) */}
+                  <div className="flex-1 min-w-0 mr-20 sm:mr-24">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-text-primary text-sm sm:text-base truncate">{step.title}</h3>
                       {step.required && (
-                        <Badge variant="outline" className="text-xs">Required</Badge>
+                        <span className="hidden sm:inline text-[10px] font-medium text-neutral-medium border border-neutral-200 rounded px-1.5 py-0.5 shrink-0">Required</span>
                       )}
                     </div>
+                    {/* Description visible on md+ in same row */}
+                    <p className="hidden md:block text-neutral-medium text-sm mt-0.5 truncate">{step.description}</p>
+                  </div>
+                </div>
 
-                    <p className="text-neutral-medium text-sm mb-4">{step.description}</p>
+                {/* Row 2 (small screens only): Description */}
+                <p className="md:hidden text-neutral-medium text-sm mt-2 ml-13 sm:ml-16">{step.description}</p>
 
+                {/* Row 3: Status action messages */}
+                <div className="mt-4 ml-13 sm:ml-16">
                     {step.id === 'profile_completion' && step.status === 'pending' && (
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div className="flex items-start gap-3">
                           <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
                           <div>
@@ -422,10 +484,6 @@ export const VerificationTasks: React.FC<VerificationTasksProps> = ({ user, onCh
                                   <ExternalLink className="h-4 w-4 mr-2" />
                                   Start Verification
                                 </Button>
-                                {/* <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50">
-                                  <Info className="h-4 w-4 mr-2" />
-                                  Learn More
-                                </Button> */}
                               </div>
                             </div>
                           </div>
@@ -435,7 +493,6 @@ export const VerificationTasks: React.FC<VerificationTasksProps> = ({ user, onCh
                         </div>
                       </div>
                     )}
-
 
                     {step.id === 'student_verification' && step.status === 'in_progress' && (
                       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -451,11 +508,11 @@ export const VerificationTasks: React.FC<VerificationTasksProps> = ({ user, onCh
                       </div>
                     )}
 
-                    {step.status === 'completed' && (
+                    {(step.status === 'completed' || step.status === 'verified') && (
                       <div className="flex items-center gap-2 text-sm text-success">
                         <CheckCircle className="h-4 w-4" />
                         {step.id === 'student_verification' ? (
-                          <span>Student status verified through Student</span>
+                          <span>Student status verified</span>
                         ) : (
                           <span>Profile completed</span>
                         )}
@@ -519,12 +576,6 @@ export const VerificationTasks: React.FC<VerificationTasksProps> = ({ user, onCh
                         </div>
                       </div>
                     )}
-                  </div>
-
-                  <div className="flex-shrink-0 flex items-center gap-2">
-                    {getStatusIcon(step.status)}
-                    <span className="text-sm font-medium text-brand-primary">+{step.points} pts</span>
-                  </div>
                 </div>
               </CardContent>
             </Card>

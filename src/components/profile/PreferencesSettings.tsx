@@ -41,14 +41,12 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
 
     // Deal Preferences
     categories: ['Technology', 'Food & Dining', 'Fashion'],
-    maxBudget: [500],
-    minDiscount: [10],
-    location: 'Boston, MA',
+    location: '',
     radius: [25],
 
     // App Preferences
     language: 'en',
-    currency: 'USD',
+    currency: 'KES',
     theme: 'light',
     autoApplyCoupons: true,
 
@@ -223,51 +221,6 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
             </div>
           </div>
 
-          {/* Budget Range */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Label className="text-sm font-medium mb-3 block">Maximum Budget per Deal</Label>
-              <div className="space-y-2">
-                <Slider
-                  value={preferences.maxBudget}
-                  onValueChange={(value) =>
-                    setPreferences(prev => ({ ...prev, maxBudget: value }))
-                  }
-                  max={1000}
-                  min={0}
-                  step={25}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-neutral-medium">
-                  <span>$0</span>
-                  <span className="font-medium">${preferences.maxBudget[0]}</span>
-                  <span>$1000+</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium mb-3 block">Minimum Discount</Label>
-              <div className="space-y-2">
-                <Slider
-                  value={preferences.minDiscount}
-                  onValueChange={(value) =>
-                    setPreferences(prev => ({ ...prev, minDiscount: value }))
-                  }
-                  max={50}
-                  min={0}
-                  step={5}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-neutral-medium">
-                  <span>0%</span>
-                  <span className="font-medium">{preferences.minDiscount[0]}%</span>
-                  <span>50%+</span>
-                </div>
-              </div>
-            </div>
-          </div> */}
-
           {/* Location Preferences */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -281,10 +234,11 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="Boston, MA">Boston, MA</SelectItem>
-                    <SelectItem value="New York, NY">New York, NY</SelectItem>
-                    <SelectItem value="Los Angeles, CA">Los Angeles, CA</SelectItem>
-                    <SelectItem value="Chicago, IL">Chicago, IL</SelectItem>
+                    <SelectItem value="Nairobi">Nairobi</SelectItem>
+                    <SelectItem value="Mombasa">Mombasa</SelectItem>
+                    <SelectItem value="Kisumu">Kisumu</SelectItem>
+                    <SelectItem value="Nakuru">Nakuru</SelectItem>
+                    <SelectItem value="Eldoret">Eldoret</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -352,6 +306,7 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
+                  <SelectItem value="KES">KES (KSh)</SelectItem>
                   <SelectItem value="USD">USD ($)</SelectItem>
                   <SelectItem value="EUR">EUR (€)</SelectItem>
                   <SelectItem value="GBP">GBP (£)</SelectItem>
@@ -359,21 +314,7 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
               </Select>
             </div>
 
-            {/* <div>
-              <Label className="text-sm font-medium mb-2 block">Theme</Label>
-              <Select value={preferences.theme} onValueChange={(value) =>
-                setPreferences(prev => ({ ...prev, theme: value }))
-              }>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="auto">Auto</SelectItem>
-                </SelectContent>
-              </Select>
-            </div> */}
+
           </div>
 
           <div className="flex items-center justify-between">
