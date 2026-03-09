@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import CategoryList from "@/components/CategoryList";
 import FeaturedCoupons from "@/components/FeaturedCoupons";
+import StudentOwnedOffers from "@/components/StudentOwnedOffers";
 import HowItWorks from "@/components/HowItWorks";
 import LatestOffers from "@/components/LatestCoupons";
 import ProviderHighlights from "@/components/ProviderHighlights";
@@ -19,6 +20,7 @@ const Index = () => {
         <Hero />
         <HowItWorks />
         <FeaturedCoupons />
+        <StudentOwnedOffers />
         <LatestOffers />
         <CategoryList />
         <ProviderHighlights />

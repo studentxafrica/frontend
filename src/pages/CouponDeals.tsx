@@ -31,11 +31,17 @@ interface Offer {
   coverImage: string;
   discountType: string;
   discountValue: number;
+  isStudentOwned?: boolean;
   merchant: {
     name: string;
     logo: string;
+    isStudentOwned?: boolean;
   };
-  category: string; // Changed from categories[]
+  category?: {
+    id: string;
+    name: string;
+    slug?: string;
+  } | string | null;
   startDate: string;
   endDate: string;
   termsAndConditions: string;
@@ -43,7 +49,7 @@ interface Offer {
 
 interface Category {
   id: string;
-  name: string;
+  slug?: string;
   label: string;
 }
 
@@ -106,6 +112,7 @@ const CouponDeals = () => {
       if (response.status === 200) {
         setCategories(response.data.data.map((cat: any) => ({
           id: cat.id,
+          slug: cat.slug,
           label: cat.name
         })));
       }
@@ -211,6 +218,16 @@ const CouponDeals = () => {
   const initialFilters = urlQuery.get("filters") ? urlQuery.get("filters")!.split(",") : [];
   const [selectedFilters, setSelectedFilters] = React.useState<string[]>(initialFilters);
 
+  const getOfferCategoryId = (offer: Offer): string | undefined => {
+    if (!offer.category) {
+      return undefined;
+    }
+    if (typeof offer.category === "string") {
+      return offer.category;
+    }
+    return offer.category.id;
+  };
+
   // Filter offers based on search query
   const filteredOffers = offers.filter(offer => {
     const matchesSearch = !urlQuery.get("search") ||
@@ -219,12 +236,22 @@ const CouponDeals = () => {
       offer.merchant.name.toLowerCase().includes(urlQuery.get("search")!.toLowerCase());
 
     const matchesFilters = selectedFilters.length === 0 ||
-      selectedFilters.some(filter =>
-        offer.category === filter || // Changed from categories.includes()
-        offer.discountType === filter ||
-        filter === 'expiring-soon' && new Date(offer.endDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ||
-        filter === 'new-arrivals' && new Date(offer.startDate) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-      );
+      selectedFilters.some(filter => {
+        const categoryId = getOfferCategoryId(offer);
+        const categorySlug = typeof offer.category === "string" ? undefined : offer.category?.slug;
+
+        if (filter === "student-owned") {
+          return Boolean(offer.isStudentOwned || offer.merchant?.isStudentOwned || categorySlug === "student-owned");
+        }
+
+        return (
+          categoryId === filter ||
+          categorySlug === filter ||
+          offer.discountType === filter ||
+          (filter === 'expiring-soon' && new Date(offer.endDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)) ||
+          (filter === 'new-arrivals' && new Date(offer.startDate) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
+        );
+      });
 
     return matchesSearch && matchesFilters;
   });

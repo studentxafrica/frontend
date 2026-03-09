@@ -41,6 +41,9 @@ const OfferHero: React.FC<OfferHeroProps> = ({ offer, onSave, onShare, isSaved }
                         <h2 className="text-lg font-semibold text-text-primary flex items-center gap-2">
                             {offer.merchant.name}
                             {offer.merchant.isApproved && <CheckCircle2 size={16} className="text-brand-accent fill-brand-accent/10" />}
+                            {offer.isStudentOwned && (
+                                <Badge className="bg-amber-100 text-amber-900 border-0">Student-Owned</Badge>
+                            )}
                         </h2>
                         <div className="flex items-center gap-3 text-sm text-text-secondary mt-1">
                             {/* Assuming website is a URL, strip for display if needed or show 'Website' */}
