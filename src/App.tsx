@@ -25,6 +25,8 @@ import Profile from "./pages/ProfilePage";
 import ResetPassword from "./pages/ResetPassword";
 import ConfirmPasswordReset from "./pages/ConfirmPasswordReset";
 import TermsOfUse from "./pages/legal/TermsOfUse";
+import PrivacyPolicy from "./pages/legal/Privacy";
+import DataConsent from "./pages/legal/DataConsent";
 import ErrorPage from "./pages/ErrorPage";
 import HelpCenter from "./pages/HelpCenter";
 import NetworkStatus from "./components/NetworkStatus";
@@ -115,6 +117,8 @@ const App = () => {
             </Route>
 
             <Route path="/terms" element={<TermsOfUse />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/data-consent" element={<DataConsent />} />
 
             <Route path="*" element={<ErrorPage statusCode={404} />} />
           </Routes>

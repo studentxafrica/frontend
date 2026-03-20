@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, ArrowRight, Loader2, AlertCircle, Mail, Edit2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import axiosInstance from '@/api/axios';
 import { setCurrentUser } from '@/state/auth';
 import { useDispatch } from 'react-redux';
@@ -304,6 +305,20 @@ export const StepCredentials: React.FC<StepCredentialsProps> = ({ onNext, initia
                         </>
                     )}
                 </button>
+
+                {step === 'password' && !isLogin && (
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                        By creating an account, you agree to our{' '}
+                        <Link to="/privacy" className="text-indigo-600 hover:text-indigo-700 underline">
+                            Privacy Policy
+                        </Link>{' '}
+                        and{' '}
+                        <Link to="/data-consent" className="text-indigo-600 hover:text-indigo-700 underline">
+                            Data Consent
+                        </Link>
+                        .
+                    </p>
+                )}
 
                 {step === 'password' && (
                     <div className="text-center pt-2">

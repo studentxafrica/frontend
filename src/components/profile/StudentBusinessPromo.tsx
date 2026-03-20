@@ -311,7 +311,7 @@ export const StudentBusinessPromo = ({ promotion }: StudentBusinessPromoProps) =
               onChange={(e) => setFormData((prev) => ({ ...prev, additionalNotes: e.target.value }))}
             />
             <div className="space-y-2">
-              <label className="text-sm font-medium">Ownership proof documents *</label>
+              <label className="text-sm font-medium">Documents for proof of ownership *</label>
               <Input
                 type="file"
                 multiple

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, ArrowLeft, ShieldCheck, Star, Users } from 'lucide-react';
+import { Zap, ArrowLeft, ShieldCheck, Users } from 'lucide-react';
 
 import { StepCredentials } from '../components/auth-new/StepCredentials';
 import { StepPersonalInfo } from '../components/auth-new/StepPersonalInfo';
@@ -95,26 +95,22 @@ const AuthNew = () => {
         credentials: {
             title: "Unlock Your Student Discounts",
             description: "Join thousands of students saving money on their favorite brands every day.",
-            quote: "StudentX has saved me over $500 this semester alone!",
-            author: "Sarah J., Stanford University"
+            highlights: ["Exclusive deals from 100+ brands", "New offers added weekly", "Free to join, always"]
         },
         personal: {
             title: "Let's Personalize Your Experience",
             description: "Tell us a bit about yourself so we can recommend the best deals for you.",
-            quote: "The personalized recommendations help me find deals I actually care about.",
-            author: "Michael T., NYU"
+            highlights: ["Deals tailored to your campus", "Categories you care about", "Smart notifications"]
         },
         verification: {
             title: "Verify & Start Saving",
             description: "Confirm your student status to access exclusive, verified-only discounts.",
-            quote: "Verification was super fast and the deals are totally worth it.",
-            author: "Jessica L., UCLA"
+            highlights: ["Quick verification process", "Your data stays private", "Unlock premium offers"]
         },
         success: {
             title: "Welcome to the Club!",
             description: "You're all set to start saving. Explore deals now.",
-            quote: "I check StudentX before I buy anything now.",
-            author: "David R., UT Austin"
+            highlights: ["Browse deals instantly", "Save your favorites", "Share with friends"]
         }
     };
 
@@ -167,16 +163,18 @@ const AuthNew = () => {
                             </p>
 
                             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10">
-                                <div className="flex gap-1 mb-3 text-yellow-400">
-                                    {[1, 2, 3, 4, 5].map(i => <Star key={i} size={16} fill="currentColor" />)}
+                                <div className="flex items-center gap-2 mb-4 text-indigo-300">
+                                    <Users size={18} />
+                                    <span className="text-sm font-medium">What you get</span>
                                 </div>
-                                <p className="text-lg italic mb-4">"{currentInfo.quote}"</p>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-indigo-500/50 flex items-center justify-center text-xs font-bold">
-                                        {currentInfo.author.charAt(0)}
-                                    </div>
-                                    <span className="text-sm font-medium text-indigo-200">{currentInfo.author}</span>
-                                </div>
+                                <ul className="space-y-3">
+                                    {currentInfo.highlights.map((item, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-white/90">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         </motion.div>
                     </AnimatePresence>
