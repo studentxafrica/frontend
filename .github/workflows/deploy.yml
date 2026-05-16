@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - staging
     paths:
       - "/**"
       - ".github/workflows/deploy.yml"
@@ -74,4 +75,3 @@ jobs:
             echo "❌ Frontend deployment failed"
           fi
           echo "Job Status: ${{ job.status }}"
-
