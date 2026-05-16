@@ -3,7 +3,7 @@ name: Deploy merchant frontend to FTP
 on:
   push:
     branches:
-      - staging
+      - master
     paths:
       - "/**"
       - ".github/workflows/deploy.yml"
@@ -74,4 +74,3 @@ jobs:
             echo "❌ Frontend deployment failed"
           fi
           echo "Job Status: ${{ job.status }}"
-
