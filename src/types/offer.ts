@@ -64,12 +64,21 @@ export interface Offer {
 	discountValue: number;
 	currency: string;
 	isSaved: boolean;
+	isStudentOwned?: boolean;
+	redemptionType?: string;
+	couponLimit?: number;
+	category?: {
+		id: string;
+		name: string;
+		slug?: string;
+	} | null;
 	merchant: {
 		id: string;
 		name: string;
 		logo: string;
 		website: string;
 		isApproved: boolean;
+		isStudentOwned?: boolean;
 	};
 	coupons: {
 		total: number;

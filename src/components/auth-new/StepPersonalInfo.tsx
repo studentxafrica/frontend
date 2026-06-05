@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Loader2, AlertCircle, User, Phone, School, Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import axiosInstance from '@/api/axios';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
@@ -156,6 +157,18 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                         {error}
                     </motion.div>
                 )}
+
+                <p className="text-xs text-slate-500 leading-relaxed">
+                    By continuing, you agree to our{' '}
+                    <Link to="/privacy" className="text-indigo-600 hover:text-indigo-700 underline">
+                        Privacy Policy
+                    </Link>{' '}
+                    and{' '}
+                    <Link to="/data-consent" className="text-indigo-600 hover:text-indigo-700 underline">
+                        Data Consent
+                    </Link>
+                    .
+                </p>
 
                 <button
                     type="submit"

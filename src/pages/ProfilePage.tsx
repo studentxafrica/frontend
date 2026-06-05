@@ -16,6 +16,7 @@ import { AccountSettings } from "@/components/profile/AccountSettings";
 import { OnboardingChecklist } from "@/components/profile/OnboardingChecklist";
 import { CouponTracker } from '@/components/profile/CouponTracker';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
+import { StudentBusinessPromo } from '@/components/profile/StudentBusinessPromo';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { toast } from '@/hooks/use-toast';
@@ -179,6 +180,10 @@ const Profile = () => {
 
 							{/* Right Column: Content */}
 							<div className="lg:col-span-9 mt-8 lg:mt-12">
+								<div className="mb-8">
+									<StudentBusinessPromo promotion={userData?.studentBusinessPromotion} />
+								</div>
+
 								{/* Tabs Navigation - Underline Style */}
 								<Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
 									<div className="border-b border-neutral-lighter mb-8 overflow-x-auto">

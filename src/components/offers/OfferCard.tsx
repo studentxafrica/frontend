@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Clock, Star, Repeat, Infinity, Trophy, Users } from 'lucide-react';
+import { Clock, Star, Repeat, Infinity, Trophy, Users, GraduationCap } from 'lucide-react';
 import Countdown from './Countdown';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -121,6 +121,13 @@ const OfferCard = ({ offer }) => {
 
 				{/* Usage type and status indicators */}
 				<div className="flex flex-wrap gap-2 mb-3">
+					{offer.isStudentOwned && (
+						<Badge className="text-xs font-medium bg-amber-100 text-amber-900 border-0">
+							<GraduationCap className="h-3 w-3 mr-1" />
+							Student-Owned
+						</Badge>
+					)}
+
 					{/* Usage type badge */}
 					<Badge className={`text-xs font-medium ${usageTypeInfo.color} border-0`}>
 						<UsageIcon className="h-3 w-3 mr-1" />

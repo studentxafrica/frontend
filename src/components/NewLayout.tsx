@@ -124,6 +124,12 @@ const getCategoryInitials = (name: string) => {
     .toUpperCase();
 };
 
+const prioritizeStudentOwned = <T extends { slug?: string }>(items: T[]) => {
+  const studentOwnedItems = items.filter((item) => item.slug === "student-owned");
+  const rest = items.filter((item) => item.slug !== "student-owned");
+  return [...studentOwnedItems, ...rest];
+};
+
 const CategoryList: React.FC = () => {
   const [categories, setCategories] = React.useState<Category[]>([]);
 
@@ -148,6 +154,8 @@ const CategoryList: React.FC = () => {
     fetchCategories();
   }, [])
 
+  const prioritizedCategories = prioritizeStudentOwned(categories).slice(0, 5);
+
   return (
     <section className={SECTION_STYLES}>
       <div className={CONTAINER_STYLES}>
@@ -159,7 +167,7 @@ const CategoryList: React.FC = () => {
         </div>
 
         <div className={GRID_STYLES}>
-          {categories.slice(0, 5).map((category) => {
+          {prioritizedCategories.map((category) => {
             const initials = getCategoryInitials(category.name);
             return (
               <Link

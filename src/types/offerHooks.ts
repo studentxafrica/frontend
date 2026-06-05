@@ -6,6 +6,7 @@ export interface Merchant {
   logo: string;
   website: string;
   isApproved?: boolean; // Optional based on existing usage
+  isStudentOwned?: boolean;
 }
 
 export interface CouponStats {
@@ -43,6 +44,7 @@ export interface OfferDetails {
   startDate: string; // ISO date string
   endDate: string; // ISO date string
   termsAndConditions: string;
+  isStudentOwned?: boolean;
   max_claims_per_user?: number;
   cooldown_period_hours?: number;
 }
@@ -94,6 +96,7 @@ export interface RecommendedOffer {
   startDate: string;
   endDate: string;
   termsAndConditions?: string;
+  isStudentOwned?: boolean;
   usage_type?: OfferUsageType;
   max_claims_per_user?: number;
   cooldown_period_hours?: number;

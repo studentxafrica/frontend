@@ -15,6 +15,12 @@ const getCategoryInitials = (name: string) => {
     .toUpperCase();
 };
 
+const prioritizeStudentOwned = <T extends { slug?: string }>(items: T[]) => {
+  const studentOwnedItems = items.filter((item) => item.slug === "student-owned");
+  const rest = items.filter((item) => item.slug !== "student-owned");
+  return [...studentOwnedItems, ...rest];
+};
+
 interface Category {
   id: string;
   name: string;
@@ -45,6 +51,8 @@ const CategoryList: React.FC = () => {
     fetchCategories();
   }, []);
 
+  const visibleCategories = prioritizeStudentOwned(categories).slice(0, 5);
+
   return (
     <section className="py-16 bg-white w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,7 +66,7 @@ const CategoryList: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 sm:gap-6">
-          {categories.slice(0, 5).map((category) => {
+          {visibleCategories.map((category) => {
             const initials = getCategoryInitials(category.name);
             return (
               <Link

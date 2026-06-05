@@ -197,16 +197,23 @@ const StudentVerificationModal: React.FC<{
 					...formData.personalInfo,
 					dateOfBirth: formData.personalInfo.dateOfBirth ? formData.personalInfo.dateOfBirth.split('T')[0] : ''
 				};
-				const response = await axiosInstance.post('/user/verification/student/submit', {
-					personalInfo,
-					academicInfo: formData.academicInfo,
-					documents: formData.documents.map(doc => ({
+				const payload = new FormData();
+				payload.append('personalInfo', JSON.stringify(personalInfo));
+				payload.append('academicInfo', JSON.stringify(formData.academicInfo));
+				payload.append('documentsMeta', JSON.stringify(
+					formData.documents.map(doc => ({
 						type: doc.type,
-						file: doc.file,
 						size: doc.file.size,
-						name: doc.type === 'student_id' ? 'Student ID' : doc.type === 'enrollment_proof' ? 'Enrollment Proof' : doc.type === 'transcript' ? 'Transcript' : 'Other',
-						preview: doc.preview
+						name: doc.type === 'student_id' ? 'Student ID' : doc.type === 'enrollment_proof' ? 'Enrollment Proof' : doc.type === 'transcript' ? 'Transcript' : 'Other'
 					}))
+				));
+				formData.documents.forEach((doc) => {
+					payload.append('documents', doc.file, doc.file.name);
+				});
+				const response = await axiosInstance.post('/user/verification/student/submit', payload, {
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
 				});
 				if (response.status === 200 || response.status === 201) {
 					toast({
