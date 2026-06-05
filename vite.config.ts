@@ -16,7 +16,6 @@ export default defineConfig(({ mode }) => ({
       "localhost:8080",
       ":::8080",
       "127.0.0.1:8080",
-      "58be8aa2849b.ngrok-free.app",
     ],
   },
   plugins: [

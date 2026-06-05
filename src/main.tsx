@@ -15,9 +15,14 @@ import {
 	PURGE,
 	REGISTER,
 } from "redux-persist";
-import storage from "redux-persist/lib/storage";
 import { PersistGate } from "redux-persist/integration/react";
 import { RootState } from "./state";
+
+const storage = {
+	getItem: (key: string) => Promise.resolve(window.localStorage.getItem(key)),
+	setItem: (key: string, value: string) => Promise.resolve(window.localStorage.setItem(key, value)),
+	removeItem: (key: string) => Promise.resolve(window.localStorage.removeItem(key)),
+};
 
 const persistConfig = { key: "studentx", storage, version: 1 };
 const rootReducer = {
@@ -34,9 +39,10 @@ const store = configureStore({
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const persistor = persistStore(store);
 root.render(
 	<Provider store={store}>
-		<PersistGate loading={null} persistor={persistStore(store)}>
+		<PersistGate loading={null} persistor={persistor}>
 			<App />
 		</PersistGate>
 	</Provider>
