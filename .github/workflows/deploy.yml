@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - master
-      - staging
-    paths:
-      - "/**"
-      - ".github/workflows/deploy.yml"
 
 jobs:
   build-and-deploy:
