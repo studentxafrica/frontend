@@ -10,7 +10,8 @@ import axiosInstance from "@/api/axios";
 
 const ResetPassword: React.FC = () => {
 	const [loading, setLoading] = React.useState(false);
-	const [email, setEmail] = React.useState('');
+	// Carried over from the sign-in screen so the student doesn't retype it
+	const [email, setEmail] = React.useState(() => new URLSearchParams(window.location.search).get('email') || '');
 	const handleReset = async (e) => {
 		e.preventDefault();
 		try {

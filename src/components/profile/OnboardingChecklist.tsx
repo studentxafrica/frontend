@@ -293,6 +293,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={handleDismiss}
+                aria-label="Dismiss checklist"
                 className="text-gray-400 hover:text-gray-600 hover:bg-blue-100 -mr-2"
               >
                 <X className="h-4 w-4" />

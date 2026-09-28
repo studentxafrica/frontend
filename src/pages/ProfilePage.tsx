@@ -28,7 +28,8 @@ const Profile = () => {
 	const urlParams = new URLSearchParams(window.location.search);
 	const [activeTab, setActiveTabFn] = useState(urlParams.get('tab') || "account");
 	const [userData, setUserData] = useState(null);
-	const [fetchingProfile, setFetchingProfile] = useState(false);
+	// Starts true so the error card doesn't flash before the first request goes out
+	const [fetchingProfile, setFetchingProfile] = useState(true);
 
 	// Onboarding wizard state
 	const shouldShowOnboarding = urlParams.get('onboarding') === 'true';
@@ -66,10 +67,10 @@ const Profile = () => {
 			}
 			setUserData(response.data.data);
 		} catch (error) {
-
+			// Without a network there is no response at all, so read it defensively
 			toast({
-				title: error.response.data.message || error.message || "Error populating profile",
-				description: error.response.data.description || "Failed to load user data. Please try again later.",
+				title: error.response?.data?.message || "We couldn't load your profile",
+				description: error.response?.data?.description || "Check your connection and try again.",
 				variant: "destructive"
 			})
 		} finally {
@@ -148,9 +149,12 @@ const Profile = () => {
 					<Card className="w-full max-w-md">
 						<CardContent className="text-center p-8">
 							<XCircle className="h-12 w-12 mx-auto mb-4 text-destructive/80" />
-							<p className="text-xl font-bold text-text-primary mb-2">Profile not found</p>
-							<p className="text-text-secondary mb-6">Please check your account or contact support.</p>
-							<Button onClick={() => window.location.reload()}>Try Again</Button>
+							<p className="text-xl font-bold text-text-primary mb-2">We couldn't load your profile</p>
+							<p className="text-text-secondary mb-6">
+								Check your connection and try again. If it keeps happening,{' '}
+								<a href="/support" className="font-medium text-brand-primary underline underline-offset-2">contact support</a>.
+							</p>
+							<Button onClick={fetchUserData}>Try Again</Button>
 						</CardContent>
 					</Card>
 				</div>

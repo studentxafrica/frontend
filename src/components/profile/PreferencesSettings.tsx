@@ -72,13 +72,28 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
     }));
   };
 
-  const handleSave = () => {
-    // Save preferences logic here
-    
-  };
-
   return (
     <div className="space-y-6">
+      {/* Nothing here can be stored yet, so say so up front instead of letting changes vanish */}
+      <div
+        id="preferences-unavailable"
+        className="flex items-start gap-3 rounded-lg border border-border bg-background-subtle p-4 text-sm text-text-primary"
+      >
+        <Clock className="mt-0.5 h-4 w-4 shrink-0 text-neutral-medium" aria-hidden />
+        <p>
+          <span className="font-semibold">Coming soon.</span> Saving preferences isn't available yet, so
+          these settings are shown for reference only. To change how we contact you, email{' '}
+          <a href="mailto:support@studentx.co.ke" className="font-medium text-brand-primary underline underline-offset-2">
+            support@studentx.co.ke
+          </a>.
+        </p>
+      </div>
+
+      <fieldset
+        disabled
+        aria-describedby="preferences-unavailable"
+        className="min-w-0 space-y-6 opacity-60 pointer-events-none"
+      >
       {/* Notification Preferences */}
       <Card className="border-neutral-lighter">
         <CardHeader>
@@ -248,6 +263,7 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
               <Label className="text-sm font-medium mb-3 block">Search Radius</Label>
               <div className="space-y-2">
                 <Slider
+                  disabled
                   value={preferences.radius}
                   onValueChange={(value) =>
                     setPreferences(prev => ({ ...prev, radius: value }))
@@ -422,11 +438,13 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
           </div>
         </CardContent>
       </Card>
+      </fieldset>
 
       {/* Save Button */}
       <div className="flex justify-end">
         <Button
-          onClick={handleSave}
+          disabled
+          aria-describedby="preferences-unavailable"
           className="bg-brand-primary hover:bg-brand-primary/90 px-8 text-white"
         >
           <Save className="h-4 w-4 mr-2" />

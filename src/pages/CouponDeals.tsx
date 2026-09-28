@@ -23,6 +23,7 @@ import OfferCard from "@/components/offers/OfferCard";
 import { toast } from "@/hooks/use-toast";
 import axiosInstance from "@/api/axios";
 import OfferCardSkeleton from "@/components/offers/OfferCardSkeleton";
+import ServerError from "@/components/ServerError";
 
 interface Offer {
   id: string;
@@ -94,6 +95,10 @@ const useUpdateFilters = () => {
 const CouponDeals = () => {
   const [offers, setOffers] = React.useState<Offer[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [loadingMore, setLoadingMore] = React.useState(false);
+  // A short page means the catalogue has run out, so there's nothing more to load
+  const [hasMore, setHasMore] = React.useState(false);
+  const [loadError, setLoadError] = React.useState(false);
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [expanded, setExpanded] = React.useState(false);
   const location = useLocation();
@@ -122,9 +127,14 @@ const CouponDeals = () => {
   };
 
   // Fetch offers with filters
-  const fetchOffers = async (limitParam: number = limit, offsetParam: number = offset) => {
+  const fetchOffers = async (limitParam: number = limit, offsetParam: number = offset, append = false) => {
     try {
-      setLoading(true);
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+        setLoadError(false);
+      }
       const params = new URLSearchParams();
 
       // Add filters
@@ -152,15 +162,23 @@ const CouponDeals = () => {
       if (response.status !== 200) {
         throw new Error(response.data.message || "Failed to fetch offers");
       }
-      setOffers(response.data.data);
+      const page: Offer[] = response.data.data || [];
+      setOffers(prev => append ? [...prev, ...page] : page);
+      setHasMore(page.length === limitParam);
     } catch (error) {
-      toast({
-        title: "Error loading offers",
-        description: "Could not load offers at this time. Please try again later.",
-        variant: "destructive"
-      });
+      if (append) {
+        // Keep what's already on screen; only the extra page failed
+        toast({
+          title: "Couldn't load more offers",
+          description: "Check your connection and try again.",
+          variant: "destructive"
+        });
+      } else {
+        setLoadError(true);
+      }
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -168,8 +186,10 @@ const CouponDeals = () => {
     fetchCategories();
   }, []);
 
+  // New filters, search or sort start the list again from the first page
   React.useEffect(() => {
-    fetchOffers();
+    setOffset(0);
+    fetchOffers(limit, 0);
   }, [location.search]);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -288,10 +308,12 @@ const CouponDeals = () => {
             </p>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="relative w-full max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <form onSubmit={handleSearch} role="search" className="relative w-full max-w-md">
+              <label htmlFor="deals-search" className="sr-only">Search offers</label>
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} aria-hidden />
               <input
-                type="text"
+                id="deals-search"
+                type="search"
                 placeholder="Search for deals..."
                 className="w-full py-3 pl-10 pr-4 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white/30"
                 value={searchQuery}
@@ -316,7 +338,7 @@ const CouponDeals = () => {
                 className="flex items-center gap-1 bg-blue-50 text-blue-700 hover:bg-blue-100"
               >
                 Search: {urlQuery.get("search")}
-                <button onClick={() => {
+                <button aria-label={`Clear search: ${urlQuery.get("search")}`} onClick={() => {
                   setSearchQuery("");
                   const params = new URLSearchParams(location.search);
                   params.delete("search");
@@ -326,21 +348,24 @@ const CouponDeals = () => {
                 </button>
               </Badge>
             )}
-            {selectedFilters.map(filter => (
-              <Badge
-                key={filter}
-                variant="secondary"
-                className="flex items-center gap-1 bg-blue-50 text-blue-700 hover:bg-blue-100"
-              >
-                {[...categories, ...discountTypes].find(c => c.id === filter)?.label ||
-                  (filter === 'new-arrivals' && 'New Arrivals') ||
-                  (filter === 'expiring-soon' && 'Expiring Soon') ||
-                  filter}
-                <button onClick={() => removeFilter(filter)}>
-                  <X size={14} />
-                </button>
-              </Badge>
-            ))}
+            {selectedFilters.map(filter => {
+              const label = [...categories, ...discountTypes].find(c => c.id === filter)?.label ||
+                (filter === 'new-arrivals' && 'New Arrivals') ||
+                (filter === 'expiring-soon' && 'Expiring Soon') ||
+                filter;
+              return (
+                <Badge
+                  key={filter}
+                  variant="secondary"
+                  className="flex items-center gap-1 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                >
+                  {label}
+                  <button aria-label={`Remove filter: ${label}`} onClick={() => removeFilter(filter)}>
+                    <X size={14} />
+                  </button>
+                </Badge>
+              );
+            })}
             <Button
               variant="ghost"
               size="sm"
@@ -517,7 +542,10 @@ const CouponDeals = () => {
 
                 <Button
                   className="w-full bg-brand-primary text-white"
-                  onClick={() => fetchOffers()}
+                  onClick={() => {
+                    setOffset(0);
+                    fetchOffers(limit, 0);
+                  }}
                 >
                   Apply Filters
                 </Button>
@@ -539,8 +567,9 @@ const CouponDeals = () => {
                 Showing <span className="text-blue-600">{sortedOffers.length}</span> deals
               </h2>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Sort by:</span>
+                <label htmlFor="deals-sort" className="text-sm text-gray-500">Sort by:</label>
                 <select
+                  id="deals-sort"
                   className="border rounded-md p-2 text-sm bg-white"
                   value={sortOption}
                   onChange={(e) => handleSortChange(e.target.value)}
@@ -557,6 +586,14 @@ const CouponDeals = () => {
                 [...Array(10)].map((_, i) => (
                   <OfferCardSkeleton key={i} />
                 ))
+              ) : loadError ? (
+                <div className="col-span-1 sm:col-span-2 xl:col-span-3">
+                  <ServerError
+                    title="We couldn't load offers"
+                    description="Check your connection and try again."
+                    onRetry={() => fetchOffers(limit, 0)}
+                  />
+                </div>
               ) : sortedOffers.length === 0 ? (
                 <div className="col-span-1 sm:col-span-2 xl:col-span-3">
                   <div className="text-center p-8">
@@ -587,22 +624,21 @@ const CouponDeals = () => {
               ))}
             </div>
 
-            {!loading && sortedOffers.length > 0 && (
+            {!loading && !loadError && hasMore && sortedOffers.length > 0 && (
               <div className="mt-12 flex justify-center">
                 <Button
                   variant="outline"
                   className="font-medium bg-gray-200"
+                  disabled={loadingMore}
+                  aria-busy={loadingMore}
                   onClick={() => {
-                    const scrollTop = document.getElementById("deals-title");
-                    scrollTop?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start"
-                    });
-                    setOffset(prev => prev + limit);
-                    fetchOffers(limit, offset + limit);
+                    // Adds the next page under what's already showing, so nothing is lost
+                    const nextOffset = offset + limit;
+                    setOffset(nextOffset);
+                    fetchOffers(limit, nextOffset, true);
                   }}
                 >
-                  Load More Deals
+                  {loadingMore ? "Loading more deals…" : "Load More Deals"}
                 </Button>
               </div>
             )}

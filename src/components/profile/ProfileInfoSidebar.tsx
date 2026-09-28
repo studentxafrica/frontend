@@ -5,14 +5,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import axiosInstance from '@/api/axios';
 import { toast } from '@/hooks/use-toast';
+import { formatCurrency } from '@/lib/currency';
+import { StudentXCard } from './StudentXCard';
 
 interface ProfileInfoSidebarProps {
     user: {
+        id?: string;
         firstName: string;
         lastName: string;
         avatar: string;
         university?: string;
         major?: string;
+        graduationYear?: string;
         joinDate: string;
         isVerified: boolean;
         dealsUsed: number;
@@ -143,7 +147,7 @@ export const ProfileInfoSidebar: React.FC<ProfileInfoSidebarProps> = ({ user, on
                     <span className="text-text-secondary">Deals Used</span>
                 </div>
                 <div className="flex gap-1.5">
-                    <span className="font-bold text-text-primary">${user.totalSavings}</span>
+                    <span className="font-bold text-text-primary">{formatCurrency(user.totalSavings ?? 0)}</span>
                     <span className="text-text-secondary">Saved</span>
                 </div>
             </div>
@@ -168,7 +172,7 @@ export const ProfileInfoSidebar: React.FC<ProfileInfoSidebarProps> = ({ user, on
                 </div>
             </div>
 
-
+            <StudentXCard user={user} />
         </div>
     );
 };

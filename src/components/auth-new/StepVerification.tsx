@@ -164,8 +164,9 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
 
                     <div className="space-y-3">
                         <div>
-                            <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">Student ID</label>
+                            <label htmlFor="student-id" className="block text-xs font-semibold uppercase text-slate-500 mb-1">Student ID</label>
                             <input
+                                id="student-id"
                                 className="w-full px-3 py-2 border rounded-md"
                                 value={academicInfo.studentId}
                                 onChange={e => setAcademicInfo({ ...academicInfo, studentId: e.target.value })}
@@ -173,8 +174,9 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">Major / Program</label>
+                            <label htmlFor="program" className="block text-xs font-semibold uppercase text-slate-500 mb-1">Major / Program</label>
                             <input
+                                id="program"
                                 className="w-full px-3 py-2 border rounded-md"
                                 value={academicInfo.program}
                                 onChange={e => setAcademicInfo({ ...academicInfo, program: e.target.value })}
@@ -183,8 +185,9 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">Year</label>
+                                <label htmlFor="year-of-study" className="block text-xs font-semibold uppercase text-slate-500 mb-1">Year</label>
                                 <select
+                                    id="year-of-study"
                                     className="w-full px-3 py-2 border rounded-md bg-white"
                                     value={academicInfo.year}
                                     onChange={e => setAcademicInfo({ ...academicInfo, year: e.target.value })}
@@ -197,8 +200,9 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">Graduation</label>
+                                <label htmlFor="expected-graduation" className="block text-xs font-semibold uppercase text-slate-500 mb-1">Graduation</label>
                                 <input
+                                    id="expected-graduation"
                                     type="month"
                                     className="w-full px-3 py-2 border rounded-md"
                                     value={academicInfo.expectedGraduation}
@@ -213,8 +217,9 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
                     <h3 className="font-semibold text-slate-900">Document Upload</h3>
 
                     <div>
-                        <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">Default Type (Optional)</label>
+                        <label htmlFor="default-document-type" className="block text-xs font-semibold uppercase text-slate-500 mb-1">Default Type (Optional)</label>
                         <select
+                            id="default-document-type"
                             className="w-full px-3 py-2 border rounded-md bg-white"
                             value={defaultDocumentType}
                             onChange={(e) => setDefaultDocumentType(e.target.value as DocumentType | '')}
@@ -229,22 +234,24 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
                         </p>
                     </div>
 
-                    <div
-                        onClick={() => fileInputRef.current?.click()}
-                        className="border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-50 transition-colors"
+                    {/* A label rather than a clickable div, so the file input stays reachable by keyboard */}
+                    <label
+                        htmlFor="verification-documents"
+                        className="border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-50 transition-colors focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900 focus-within:ring-offset-2"
                     >
-                        <Upload className="text-slate-400 mb-2" />
-                        <p className="text-sm font-medium text-slate-900">Click to upload document</p>
-                        <p className="text-xs text-slate-500">Student ID, Transcript, or Enrollment Letter</p>
+                        <Upload className="text-slate-400 mb-2" aria-hidden />
+                        <span className="text-sm font-medium text-slate-900">Choose documents to upload</span>
+                        <span className="text-xs text-slate-500">Student ID, Transcript, or Enrollment Letter · PDF, JPG or PNG up to 5MB</span>
                         <input
+                            id="verification-documents"
                             ref={fileInputRef}
                             type="file"
                             accept="image/*,.pdf"
-                            className="hidden"
+                            className="sr-only"
                             multiple
                             onChange={(e) => handleFileUpload(e.target.files)}
                         />
-                    </div>
+                    </label>
 
                     {documents.length > 0 && (
                         <div className="space-y-2">
@@ -256,6 +263,7 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <select
+                                            aria-label={`Document type for ${doc.file.name}`}
                                             className="text-xs border rounded-md px-2 py-1 bg-white"
                                             value={doc.type ?? ''}
                                             onChange={(e) => {
@@ -268,7 +276,12 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
                                                 <option key={option.value} value={option.value}>{option.label}</option>
                                             ))}
                                         </select>
-                                        <button onClick={() => removeDocument(doc.id)} className="text-slate-400 hover:text-red-500">
+                                        <button
+                                            type="button"
+                                            onClick={() => removeDocument(doc.id)}
+                                            aria-label={`Remove ${doc.file.name}`}
+                                            className="text-slate-400 hover:text-red-500"
+                                        >
                                             <X size={16} />
                                         </button>
                                     </div>

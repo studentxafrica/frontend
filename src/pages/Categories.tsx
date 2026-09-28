@@ -5,9 +5,9 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Zap, ArrowRight, Cat } from "lucide-react";
 import axiosInstance from "@/api/axios";
-import { toast } from "@/hooks/use-toast";
 import { Category } from "@/types/category";
 import EmptyState from "@/components/EmptyState";
+import ServerError from "@/components/ServerError";
 
 const CategoriesSkeleton = () => (
   <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -38,10 +38,12 @@ const CategoriesSkeleton = () => (
 const Categories = () => {
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [loadError, setLoadError] = React.useState(false);
 
   const fetchCategories = async () => {
     try {
       setLoading(true);
+      setLoadError(false);
       const response = await axiosInstance.get('/category/all');
       if (response.status !== 200) {
         throw new Error(response.data.message || 'Failed to fetch categories');
@@ -49,12 +51,8 @@ const Categories = () => {
       const categoryData = response.data.data;
       setCategories(categoryData);
     } catch (error) {
-      
-      toast({
-        title: error.response.data?.message || error.message || "An error occurred",
-        description: error.response.data?.message || "Something went wrong while getting categories. It's not you it's us",
-        variant: `${error.response.status.toLocaleString().startsWith(4) ? "warning" : "destructive"}`
-      });
+      // Shown in place of the grid, so a failed request doesn't read as "no categories"
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -88,6 +86,12 @@ const Categories = () => {
         <div className="container  px-4 py-6">
           {loading ? (
             <CategoriesSkeleton />
+          ) : loadError ? (
+            <ServerError
+              title="We couldn't load categories"
+              description="Check your connection and try again."
+              onRetry={fetchCategories}
+            />
           ) : categories.length === 0 ? (
             <EmptyState
               icon={<Cat className="h-8 w-8 text-gray-400" />}

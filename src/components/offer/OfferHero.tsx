@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"; // Assuming this exists from prev
 import { ImageLightbox } from "@/components/ui/image-preview";
 import { OfferDetails, DiscountType, OfferKind } from "@/types/offerHooks";
 import { motion } from "framer-motion";
+import { DEFAULT_CURRENCY, formatCurrency } from "@/lib/currency";
 
 interface OfferHeroProps {
     offer: OfferDetails;
@@ -20,7 +21,7 @@ const OfferHero: React.FC<OfferHeroProps> = ({ offer, onSave, onShare, isSaved }
         if (offer.offerKind === OfferKind.EVENT) return "EVENT";
         switch (offer.discountType) {
             case DiscountType.PERCENTAGE: return `${offer.discountValue}% OFF`;
-            case DiscountType.FIXED_AMOUNT: return `$${offer.discountValue} OFF`;
+            case DiscountType.FIXED_AMOUNT: return `${formatCurrency(offer.discountValue, offer.currency || DEFAULT_CURRENCY)} OFF`;
             case DiscountType.BUY_ONE_GET_ONE: return "BOGO";
             case DiscountType.FREE_ITEM: return "Free Item";
             default: return `${offer.discountValue}% OFF`;
@@ -60,10 +61,10 @@ const OfferHero: React.FC<OfferHeroProps> = ({ offer, onSave, onShare, isSaved }
                 </div>
 
                 <div className="flex gap-2">
-                    <Button variant="ghost" size="icon" onClick={onShare} className="text-text-tertiary hover:text-brand-primary hover:bg-brand-primary/10 rounded-full">
+                    <Button variant="ghost" size="icon" onClick={onShare} aria-label="Share offer" className="text-text-tertiary hover:text-brand-primary hover:bg-brand-primary/10 rounded-full">
                         <Share2 size={20} />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={onSave} className={`${isSaved ? 'text-brand-primary bg-brand-primary/10' : 'text-text-tertiary'} hover:text-brand-primary hover:bg-brand-primary/10 rounded-full`}>
+                    <Button variant="ghost" size="icon" onClick={onSave} aria-label="Save offer" aria-pressed={isSaved} className={`${isSaved ? 'text-brand-primary bg-brand-primary/10' : 'text-text-tertiary'} hover:text-brand-primary hover:bg-brand-primary/10 rounded-full`}>
                         <Bookmark size={20} fill={isSaved ? "currentColor" : "none"} />
                     </Button>
                 </div>

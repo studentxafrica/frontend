@@ -18,6 +18,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Search, User, Menu, X, Zap } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/state";
@@ -187,6 +195,7 @@ const Header: React.FC<HeaderProps> = ({ sx, offsetTop }) => {
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label="Account menu"
                     className="hover:bg-gray-100 rounded-full w-10 h-10"
                   >
                     <User className="h-5 w-5 text-gray-700" />
@@ -223,10 +232,11 @@ const Header: React.FC<HeaderProps> = ({ sx, offsetTop }) => {
               </DropdownMenu>
             ) : (
               <div className="flex items-center space-x-2">
+                {/* On narrow screens Log In moves into the menu so the bar doesn't overflow */}
                 <Button
                   variant="outline"
                   onClick={() => navigate('/auth?page=login')}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50 whitespace-nowrap text-sm h-10 px-4 rounded-lg"
+                  className="hidden sm:inline-flex border-gray-300 text-gray-700 hover:bg-gray-50 whitespace-nowrap text-sm h-10 px-4 rounded-lg"
                 >
                   Log In
                 </Button>
@@ -238,6 +248,116 @@ const Header: React.FC<HeaderProps> = ({ sx, offsetTop }) => {
                 </Button>
               </div>
             )}
+
+            {/* Mobile navigation: the desktop nav above is hidden below md */}
+            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Open menu"
+                  className="md:hidden rounded-full w-10 h-10 hover:bg-gray-100"
+                >
+                  <Menu className="h-5 w-5 text-gray-700" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="flex w-[85%] flex-col gap-0 p-0 sm:max-w-sm">
+                <SheetHeader className="border-b border-neutral-200 px-6 py-5 text-left">
+                  <SheetTitle className="text-lg font-semibold text-neutral-900">Menu</SheetTitle>
+                  <SheetDescription className="sr-only">Browse offers, categories and your account</SheetDescription>
+                </SheetHeader>
+
+                <nav aria-label="Main" className="flex-1 overflow-y-auto px-6 py-4">
+                  <ul className="divide-y divide-neutral-200">
+                    <li>
+                      <Link
+                        to="/deals"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="block py-3 text-base font-medium text-neutral-900 hover:text-brand-primary"
+                      >
+                        Browse Offers
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/categories"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="block py-3 text-base font-medium text-neutral-900 hover:text-brand-primary"
+                      >
+                        All Categories
+                      </Link>
+                    </li>
+                  </ul>
+
+                  {categories.length > 0 && (
+                    <>
+                      <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                        Categories
+                      </p>
+                      <ul className="mt-2">
+                        {categories.map((category) => (
+                          <li key={category.id}>
+                            <Link
+                              to={`/deals?filters=${category.id}`}
+                              onClick={() => setIsMenuOpen(false)}
+                              className="block py-2.5 text-sm text-neutral-700 hover:text-brand-primary"
+                            >
+                              {category.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </nav>
+
+                <div className="border-t border-neutral-200 px-6 py-4">
+                  {isAuthenticated ? (
+                    <div className="flex flex-col gap-1">
+                      <Link
+                        to="/me"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="py-2.5 text-base font-medium text-neutral-900 hover:text-brand-primary"
+                      >
+                        My Profile
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          dispatch(setLogout());
+                        }}
+                        className="py-2.5 text-left text-base font-medium text-red-600 hover:text-red-700"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          navigate('/auth?page=login');
+                        }}
+                        className="h-11 rounded-lg"
+                      >
+                        Log In
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          navigate('/auth?page=signup');
+                        }}
+                        className="h-11 rounded-lg"
+                      >
+                        Sign Up
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>

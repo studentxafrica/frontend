@@ -20,6 +20,7 @@ const Footer: React.FC = () => {
             <p className="text-gray-400 mb-4">
               Connecting students with the best discounts and deals across campus and beyond.
             </p>
+            {/* Social icons linked to "#" until real profile URLs exist; restore them with the actual links.
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white">
                 <span className="sr-only">Facebook</span>
@@ -40,6 +41,7 @@ const Footer: React.FC = () => {
                 </svg>
               </a>
             </div>
+            */}
           </div>
 
           <div>
@@ -61,10 +63,10 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">For Businesses</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="https://merchant.studentx.co.ke" target="_blank" className="text-gray-400 hover:text-white">Partner With Us</Link>
+                <a href="https://merchant.studentx.co.ke" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">Partner With Us</a>
               </li>
               <li>
-                <Link to="https://merchant.studentx.co.ke/login" target="_blank" className="text-gray-400 hover:text-white">Merchant Login</Link>
+                <a href="https://merchant.studentx.co.ke/login" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">Merchant Login</a>
               </li>
               {/* <li>
                 <Link to="/success-stories" className="text-gray-400 hover:text-white">Success Stories</Link>
@@ -79,16 +81,16 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Contact & Support</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="#" className="text-gray-400 hover:text-white">Contact Us</Link>
+                <a href="mailto:support@studentx.co.ke" className="text-gray-400 hover:text-white">Contact Us</a>
               </li>
               <li>
-                <Link to="#" className="text-gray-400 hover:text-white">FAQs</Link>
+                <Link to="/support" className="text-gray-400 hover:text-white">Help Center</Link>
               </li>
               <li>
-                <Link to="#" className="text-gray-400 hover:text-white">Privacy Policy</Link>
+                <Link to="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</Link>
               </li>
               <li>
-                <Link to="#" className="text-gray-400 hover:text-white">Terms of Service</Link>
+                <Link to="/terms" className="text-gray-400 hover:text-white">Terms of Service</Link>
               </li>
             </ul>
           </div>

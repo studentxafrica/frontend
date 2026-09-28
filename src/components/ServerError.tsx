@@ -1,5 +1,6 @@
 // Server error component to display error messages with a retry option and a sad face icon
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { AlertTriangle, Frown, RefreshCw } from 'lucide-react';
 import { Button } from './ui/button';
 import { toast } from '@/hooks/use-toast';
@@ -20,7 +21,7 @@ const ServerError: React.FC<ServerErrorProps> = ({title, description, onRetry}) 
 				<RefreshCw className="h-4 w-4" /> 
 				<p className='text-gray-700'>Retry</p>
 			</Button>
-			<a className='text-blue-500 text-xs hover:underline mt-3' href="#">Contact Support</a>
+			<Link className='text-blue-500 text-xs hover:underline mt-3' to="/support">Contact Support</Link>
 		</div>
 	);
 };

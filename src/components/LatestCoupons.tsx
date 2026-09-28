@@ -2,19 +2,22 @@ import * as React from "react";
 import { RotateCw } from "lucide-react";
 import { Cta, QuietLink } from "@/components/ui/cta";
 import axiosInstance from "@/api/axios";
-import { toast } from "@/hooks/use-toast";
 import OfferCard from "./offers/OfferCard";
+import ServerError from "./ServerError";
 import { Offer } from "@/types/offer";
 import OfferCardSkeleton from "./offers/OfferCardSkeleton";
 import SectionHeading from "./SectionHeading";
 
 const LatestOffers = () => {
   const [recentOffers, setRecentOffers] = React.useState<Offer[]>([]);
-  const [loading, setLoading] = React.useState(false);
+  // Starts true so the empty state doesn't flash before the first request
+  const [loading, setLoading] = React.useState(true);
+  const [loadError, setLoadError] = React.useState(false);
 
   const fetchRecentOffers = async () => {
     try {
       setLoading(true);
+      setLoadError(false);
       const response = await axiosInstance.get('/offer/latest');
       if (response.status !== 200) {
         throw new Error(response.data.message || 'An error occurred while fetching recent offers');
@@ -22,14 +25,8 @@ const LatestOffers = () => {
       const offers = response.data.data;
       setRecentOffers(offers);
     } catch (error) {
-      const message = error.response?.data?.message || error.message || "An error occurred";
-      const status = error.response?.status;
-
-      toast({
-        title: message,
-        description: "Something went wrong while getting recent offers. It's not you it's us",
-        variant: status?.toString().startsWith("4") ? "warning" : "destructive"
-      });
+      // Shown inline, so a failed request doesn't pass for "nothing new"
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -59,6 +56,12 @@ const LatestOffers = () => {
                 <OfferCardSkeleton key={i} />
               ))}
             </div>
+          ) : loadError ? (
+            <ServerError
+              title="We couldn't load the newest offers"
+              description="Check your connection and try again."
+              onRetry={fetchRecentOffers}
+            />
           ) : recentOffers.length > 0 ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {recentOffers.map((offer) => (

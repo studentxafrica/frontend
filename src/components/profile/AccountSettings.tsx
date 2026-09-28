@@ -653,6 +653,8 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({ user }) => {
                   size="icon"
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
@@ -716,18 +718,20 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({ user }) => {
             Data Management
           </CardTitle>
           <CardDescription>
-            Export or delete your account data
+            Export or delete your account data. These requests are handled by our support team for now.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between p-4 border border-neutral-lighter rounded-lg">
             <div>
               <h3 className="font-medium text-lg text-text-primary">Export Data</h3>
-              <p className="text-sm text-neutral-medium">Request a copy of your data</p>
+              <p className="text-sm text-neutral-medium">Email support to request a copy of your data</p>
             </div>
-            <Button type="button" variant="outline" className="hover:border-brand-primary hover:text-brand-primary mt-4 md:mt-0">
-              <Download className="h-4 w-4 mr-2" />
-              Export
+            <Button asChild variant="outline" className="hover:border-brand-primary hover:text-brand-primary mt-4 md:mt-0">
+              <a href="mailto:support@studentx.co.ke?subject=Data%20export%20request">
+                <Download className="h-4 w-4 mr-2" />
+                Request export
+              </a>
             </Button>
           </div>
 
@@ -737,11 +741,13 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({ user }) => {
                 <AlertTriangle className="h-4 w-4" />
                 Delete Account
               </h3>
-              <p className="text-sm text-neutral-medium">Permanently delete your account and all data</p>
+              <p className="text-sm text-neutral-medium">Email support to permanently delete your account and all data</p>
             </div>
-            <Button className='mt-4 md:mt-0' type="button" variant="destructive">
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete Account
+            <Button asChild variant="outline" className="mt-4 md:mt-0 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive">
+              <a href="mailto:support@studentx.co.ke?subject=Account%20deletion%20request">
+                <Trash2 className="h-4 w-4 mr-2" />
+                Request deletion
+              </a>
             </Button>
           </div>
         </CardContent>

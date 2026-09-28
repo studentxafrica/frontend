@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Cta, QuietLink } from "@/components/ui/cta";
 import axiosInstance from "@/api/axios";
-import { toast } from "@/hooks/use-toast";
 import { Offer } from "@/types/offer";
+import ServerError from "./ServerError";
 import OfferCard from "./offers/OfferCard";
 import OfferCardSkeleton from "./offers/OfferCardSkeleton";
 import SectionHeading from "./SectionHeading";
@@ -12,10 +12,12 @@ const STUDENT_OWNED_FILTER = "student-owned";
 const StudentOwnedOffers = () => {
   const [offers, setOffers] = React.useState<Offer[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [loadError, setLoadError] = React.useState(false);
 
   const fetchStudentOwnedOffers = async () => {
     try {
       setLoading(true);
+      setLoadError(false);
       const params = new URLSearchParams({
         filters: STUDENT_OWNED_FILTER,
         sort: "newest",
@@ -24,11 +26,8 @@ const StudentOwnedOffers = () => {
       const response = await axiosInstance.get(`/offer/recommended?${params.toString()}`);
       setOffers(response.data?.data || []);
     } catch (error) {
-      toast({
-        title: error.response?.data?.message || error.message || "Error",
-        description: "Unable to load student-owned offers right now.",
-        variant: "destructive",
-      });
+      // Shown inline, so a failed request doesn't read as "no student businesses yet"
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -59,6 +58,12 @@ const StudentOwnedOffers = () => {
                 <OfferCardSkeleton key={idx} />
               ))}
             </div>
+          ) : loadError ? (
+            <ServerError
+              title="We couldn't load student-owned offers"
+              description="Check your connection and try again."
+              onRetry={fetchStudentOwnedOffers}
+            />
           ) : offers.length > 0 ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {offers.map((offer) => (

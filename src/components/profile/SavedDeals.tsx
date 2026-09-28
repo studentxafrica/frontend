@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   Search,
-  Filter,
   Share2,
   ExternalLink,
   Trash2,
@@ -22,6 +21,7 @@ import { toast } from '@/hooks/use-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { useConfirmModal } from '@/hooks/use-confirm-modal';
 import { ConfirmModal } from '../confirmModal';
+import { formatCurrency } from '@/lib/currency';
 
 interface SavedDealsProps {
   user: any;
@@ -163,7 +163,7 @@ export const SavedDeals: React.FC<SavedDealsProps> = ({ user }) => {
         <Card className="border-neutral-lighter">
           <CardContent className="p-6 text-center">
             <div className="text-2xl font-bold text-success mb-1">
-              ${savedDeals.reduce((total, deal) => total + deal.savings, 0)}
+              {formatCurrency(savedDeals.reduce((total, deal) => total + (deal.savings || 0), 0))}
             </div>
             <div className="text-sm text-neutral-medium">Potential Savings</div>
           </CardContent>
@@ -185,6 +185,8 @@ export const SavedDeals: React.FC<SavedDealsProps> = ({ user }) => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-medium h-4 w-4" />
               <Input
+                type="search"
+                aria-label="Search saved deals"
                 placeholder="Search saved deals..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -193,6 +195,7 @@ export const SavedDeals: React.FC<SavedDealsProps> = ({ user }) => {
             </div>
             <div className="flex gap-2">
               <select
+                aria-label="Filter by category"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="px-3 py-2 border border-neutral-lighter rounded-md text-sm"
@@ -203,10 +206,6 @@ export const SavedDeals: React.FC<SavedDealsProps> = ({ user }) => {
                   </option>
                 ))}
               </select>
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                More Filters
-              </Button>
             </div>
           </div>
         </CardContent>
@@ -291,7 +290,7 @@ export const SavedDeals: React.FC<SavedDealsProps> = ({ user }) => {
                       </Button>
                       <Button onClick={
                         () => shareContent(deal.title, deal.description, window.location.href + `/offer/${deal.offerId}`)
-                      } variant="outline" size="icon">
+                      } variant="outline" size="icon" aria-label={`Share ${deal.title}`}>
                         <Share2 className="h-4 w-4" />
                       </Button>
                       <Button
@@ -308,7 +307,7 @@ export const SavedDeals: React.FC<SavedDealsProps> = ({ user }) => {
                               onClose: closeModal,
                             });
                           }
-                        } variant="outline" size="icon" className="text-destructive hover:text-destructive">
+                        } variant="outline" size="icon" aria-label={`Remove ${deal.title} from saved deals`} className="text-destructive hover:text-destructive">
                       {deletingSavedOffer ? (
                         <span className="animate-spin">
                           <Loader2 className="h-4 w-4" />

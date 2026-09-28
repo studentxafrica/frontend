@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state";
 import { toast } from "@/hooks/use-toast";
+import { isAxiosError } from "axios";
 import axiosInstance from "@/api/axios";
 import OfferLayout from "@/components/offer/OfferLayout";
 import OfferHero from "@/components/offer/OfferHero";
@@ -10,6 +13,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { OfferDetails, AvailableClaims, CouponClaimSuccessData, RecommendedOffer, OfferKind } from "@/types/offerHooks";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Mock data fallback if API fails (for development/demo purposes)
 // In a real scenario, we'd rely solely on the API or have a robust mock server.
@@ -38,10 +42,15 @@ const MOCK_OFFER: OfferDetails = {
 const OfferDetailsNew: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const isAuthenticated = useSelector((state: RootState) => !!state.auth.user);
 
     // State
     const [offer, setOffer] = useState<OfferDetails | null>(null);
     const [loading, setLoading] = useState(true);
+    // Tells "this offer doesn't exist" apart from "we couldn't reach the server",
+    // and from "the API only shows offers to signed-in students"
+    const [loadError, setLoadError] = useState<"not-found" | "failed" | "sign-in" | null>(null);
+    const [loadAttempt, setLoadAttempt] = useState(0);
     const [availability, setAvailability] = useState<AvailableClaims | null>(null);
     const [recs, setRecs] = useState<RecommendedOffer[]>([]);
 
@@ -56,27 +65,32 @@ const OfferDetailsNew: React.FC = () => {
 
         const fetchData = async () => {
             setLoading(true);
+            setLoadError(null);
             try {
                 // Parallel fetch for offer details and availability/recs
 
                 // 1. Get Offer Details
-                const offerRes = await axiosInstance.get(`/offer/${id}`);
+                // A guest who gets a 401 should see why here, not be bounced away mid-browse
+                const offerRes = await axiosInstance.get(`/offer/${id}`, { skipAuthRedirect: !isAuthenticated });
                 const offerData = offerRes.data.data || offerRes.data;
                 setOffer(offerData);
 
-                // 2. Get Availability
-                try {
-                    const availRes = await axiosInstance.get(`/offer/${id}/available-claims`);
-                    const availData: AvailableClaims = availRes.data.data || availRes.data;
-                    setAvailability(availData);
+                // 2. Get Availability — only meaningful for a signed-in student, and a
+                // guest request would be bounced to the login page by the API client
+                if (isAuthenticated) {
+                    try {
+                        const availRes = await axiosInstance.get(`/offer/${id}/available-claims`);
+                        const availData: AvailableClaims = availRes.data.data || availRes.data;
+                        setAvailability(availData);
 
-                    // Everyone registered for an event gets the same link, so show it
-                    // straight away rather than blocking on "already registered"
-                    if (offerData?.offerKind === OfferKind.EVENT && availData?.existing_claim) {
-                        setClaimedCoupon(availData.existing_claim);
+                        // Everyone registered for an event gets the same link, so show it
+                        // straight away rather than blocking on "already registered"
+                        if (offerData?.offerKind === OfferKind.EVENT && availData?.existing_claim) {
+                            setClaimedCoupon(availData.existing_claim);
+                        }
+                    } catch (e) {
+                        console.warn("Failed to fetch availability", e);
                     }
-                } catch (e) {
-                    console.warn("Failed to fetch availability", e);
                 }
 
                 // 3. Get Recommendations
@@ -89,23 +103,29 @@ const OfferDetailsNew: React.FC = () => {
 
             } catch (error) {
                 console.error("Error fetching offer:", error);
-                toast({
-                    title: "Could not load offer",
-                    description: "Please check your connection and try again.",
-                    variant: "destructive"
-                });
+                const status = isAxiosError(error) ? error.response?.status : undefined;
+                setLoadError(
+                    status === 404 ? "not-found"
+                        : status === 401 && !isAuthenticated ? "sign-in"
+                            : "failed"
+                );
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, [id]);
+    }, [id, isAuthenticated, loadAttempt]);
+
+    const sendToSignIn = () => {
+        navigate(`/auth?page=login&next=${encodeURIComponent(window.location.pathname)}`);
+    };
 
     const isEvent = offer?.offerKind === OfferKind.EVENT;
 
     const handleClaim = async () => {
         if (!offer) return;
+        if (!isAuthenticated) return sendToSignIn();
         setClaiming(true);
         setClaimError(null);
 
@@ -142,6 +162,7 @@ const OfferDetailsNew: React.FC = () => {
 
     const handleSave = async () => {
         if (!offer) return;
+        if (!isAuthenticated) return sendToSignIn();
         try {
             // Optimistic update could happen here
             await axiosInstance.post(`/offer/${offer.id}/save`);
@@ -182,12 +203,45 @@ const OfferDetailsNew: React.FC = () => {
         return (
             <div className="min-h-screen flex flex-col bg-background-lighter">
                 <Header />
-                <div className="flex-grow flex flex-col items-center justify-center p-4 text-center">
-                    <h2 className="text-2xl font-bold text-text-primary mb-2">Offer Not Found</h2>
-                    <p className="text-text-secondary mb-6">This offer may have expired or does not exist.</p>
-                    <button onClick={() => navigate('/deals')} className="text-brand-primary font-medium hover:underline">
-                        Back to Deals
-                    </button>
+                <div className="flex-grow flex flex-col items-center justify-center p-4 pt-28 text-center">
+                    {loadError === "sign-in" ? (
+                        <>
+                            <h1 className="text-2xl font-bold text-text-primary mb-2">Sign in to see this offer</h1>
+                            <p className="text-text-secondary mb-6 max-w-md">
+                                Offer details are for StudentX members. Sign in, or create a free account, and we'll bring you straight back here.
+                            </p>
+                            <div className="flex flex-wrap items-center justify-center gap-4">
+                                <Button onClick={sendToSignIn}>Sign in</Button>
+                                <button
+                                    onClick={() => navigate(`/auth?page=signup&next=${encodeURIComponent(window.location.pathname)}`)}
+                                    className="text-brand-primary font-medium hover:underline"
+                                >
+                                    Create a free account
+                                </button>
+                            </div>
+                        </>
+                    ) : loadError === "failed" ? (
+                        <>
+                            <h1 className="text-2xl font-bold text-text-primary mb-2">We couldn't load this offer</h1>
+                            <p className="text-text-secondary mb-6">Check your connection and try again.</p>
+                            <div className="flex flex-wrap items-center justify-center gap-4">
+                                <Button onClick={() => setLoadAttempt((attempt) => attempt + 1)}>
+                                    Try again
+                                </Button>
+                                <button onClick={() => navigate('/deals')} className="text-brand-primary font-medium hover:underline">
+                                    Back to Deals
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <h1 className="text-2xl font-bold text-text-primary mb-2">Offer Not Found</h1>
+                            <p className="text-text-secondary mb-6">This offer may have expired or does not exist.</p>
+                            <button onClick={() => navigate('/deals')} className="text-brand-primary font-medium hover:underline">
+                                Back to Deals
+                            </button>
+                        </>
+                    )}
                 </div>
                 <Footer />
             </div>
@@ -212,6 +266,7 @@ const OfferDetailsNew: React.FC = () => {
                             offer={offer}
                             availability={availability}
                             onClaim={handleClaim}
+                            isAuthenticated={isAuthenticated}
                             isLoading={claiming}
                             claimError={claimError}
                             claimedCoupon={claimedCoupon}

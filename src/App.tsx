@@ -8,7 +8,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import ProtectedRoute from "./context/ProtectedRoute";
 import { RootState } from "./state";
 
 import DefaultLayout from "./layout/DefaultLayout";
@@ -93,20 +92,12 @@ const App = () => {
             <Route path="/auth/user/confirm-reset-password" element={<ConfirmPasswordReset />} />
             <Route path="/support" element={<HelpCenter />} />
 
-            {/* Main public routes */}
+            {/* Anyone can read an offer; claiming it asks for sign-in on the page itself */}
+            <Route path="/offer/:id" element={<OfferDetailsNew />} />
+            <Route path="/offer-new/:id" element={<OfferDetailsNew />} />
+
+            {/* Routes that need a signed-in user */}
             <Route element={<DefaultLayout />}>
-
-              <Route path="/offer/:id" element={
-                <ProtectedRoute allowedRoles={["consumer"]}>
-                  <OfferDetailsNew />
-                </ProtectedRoute>
-              } />
-
-              <Route path="/offer-new/:id" element={
-                <ProtectedRoute allowedRoles={["consumer"]}>
-                  <OfferDetailsNew />
-                </ProtectedRoute>
-              } />
 
               <Route path="/me" element={
                 // <ProtectedRoute allowedRoles={["consumer"]}>

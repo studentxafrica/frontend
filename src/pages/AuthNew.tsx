@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, ArrowLeft, ShieldCheck, Users } from 'lucide-react';
+import { Zap, ArrowLeft, FileCheck2, Users } from 'lucide-react';
 
 import { StepCredentials } from '../components/auth-new/StepCredentials';
 import { StepPersonalInfo } from '../components/auth-new/StepPersonalInfo';
@@ -82,7 +82,9 @@ const AuthNew = () => {
     };
 
     const handlePersonalNext = (data: { firstName: string; lastName: string; phone: string; university: string; dob: string }) => {
-        dispatch({ type: 'UPDATE_DATA', payload: data });
+        // The account exists once this step succeeds. Dropping the password stops a
+        // Back-and-resubmit from registering the same email again, and keeps it out of storage.
+        dispatch({ type: 'UPDATE_DATA', payload: { ...data, password: undefined } });
         dispatch({ type: 'SET_STEP', payload: 'verification' });
     };
 
@@ -108,9 +110,9 @@ const AuthNew = () => {
             highlights: ["Quick verification process", "Your data stays private", "Unlock premium offers"]
         },
         success: {
-            title: "Welcome to the Club!",
-            description: "You're all set to start saving. Explore deals now.",
-            highlights: ["Browse deals instantly", "Save your favorites", "Share with friends"]
+            title: "Almost There",
+            description: "We're checking your documents. Deals for verified students open once that's done.",
+            highlights: ["Browse offers while you wait", "Save the ones you like", "Track your status from your profile"]
         }
     };
 
@@ -223,6 +225,7 @@ const AuthNew = () => {
                                     <StepCredentials
                                         onNext={handleCredentialsNext}
                                         initialEmail={state.data.email}
+                                        intent={page === 'login' || page === 'signup' ? page : undefined}
                                     />
                                 )}
 
@@ -249,21 +252,22 @@ const AuthNew = () => {
                                             animate={{ scale: 1 }}
                                             className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6"
                                         >
-                                            <ShieldCheck size={48} />
+                                            <FileCheck2 size={48} />
                                         </motion.div>
-                                        <h2 className="text-3xl font-bold mb-3 text-slate-900">You're verified!</h2>
+                                        <h2 className="text-3xl font-bold mb-3 text-slate-900">Documents received</h2>
                                         <p className="text-slate-500 mb-8 text-lg">
-                                            Welcome to StudentX. Your documents have been submitted and your account is ready.
+                                            We're reviewing your student status. Deals for verified students unlock
+                                            once that's done, and you can check progress anytime from your profile.
                                         </p>
 
                                         <button
                                             onClick={() => {
                                                 localStorage.removeItem('auth_flow_state');
-                                                navigate('/me');
+                                                navigate(next || '/me?tab=verification');
                                             }}
                                             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-4 font-semibold text-lg transition-all shadow-lg shadow-indigo-200"
                                         >
-                                            Go to Dashboard
+                                            {next ? 'Continue where you left off' : 'View verification status'}
                                         </button>
                                     </div>
                                 )}

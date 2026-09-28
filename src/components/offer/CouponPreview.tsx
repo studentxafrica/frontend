@@ -64,7 +64,7 @@ export const CouponPreview: React.FC<CouponPreviewProps> = ({ coupon }) => {
                             onClick={handleCopy}
                         >
                             <span className="text-sm text-text-secondary truncate">{coupon.eventUrl}</span>
-                            <Button size="icon" variant="ghost" className="shrink-0 text-text-tertiary group-hover:text-brand-primary">
+                            <Button size="icon" variant="ghost" aria-label={copied ? "Event link copied" : "Copy event link"} className="shrink-0 text-text-tertiary group-hover:text-brand-primary">
                                 {copied ? <Check size={20} /> : <Copy size={20} />}
                             </Button>
                         </div>
@@ -76,7 +76,7 @@ export const CouponPreview: React.FC<CouponPreviewProps> = ({ coupon }) => {
                             <code className="text-lg sm:text-xl font-mono font-bold text-text-primary pl-2">
                                 {coupon.code}
                             </code>
-                            <Button size="icon" variant="ghost" className="text-text-tertiary group-hover:text-brand-primary">
+                            <Button size="icon" variant="ghost" aria-label={copied ? "Code copied" : "Copy code"} className="text-text-tertiary group-hover:text-brand-primary">
                                 {copied ? <Check size={20} /> : <Copy size={20} />}
                             </Button>
                         </div>

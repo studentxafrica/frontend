@@ -13,15 +13,12 @@ import {
   CheckCircle,
   AlertCircle,
   Search,
-  Filter,
-  Download,
   Share2,
   Copy,
   ExternalLink,
   Star,
   Percent,
   DollarSign,
-  Eye,
   ShoppingBag,
   Repeat,
   Trophy,
@@ -34,6 +31,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { formatCurrency } from '@/lib/currency';
 
 interface CouponTrackerProps {
   user: {
@@ -99,6 +97,29 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
   const expiredCoupons = coupons.filter(coupon => coupon.status === 'expired');
 
   const totalSavingsFromCoupons = usedCoupons.reduce((total, coupon) => total + (coupon.savings || 0), 0);
+
+  // Search narrows the tab lists; the stats above keep counting everything
+  const searchTerm = searchQuery.trim().toLowerCase();
+  const matchesSearch = (coupon: Coupon) =>
+    !searchTerm ||
+    [coupon.title, coupon.brand, coupon.code, coupon.category?.name]
+      .some(value => value?.toLowerCase().includes(searchTerm));
+  const visibleActive = activeCoupons.filter(matchesSearch);
+  const visibleUsed = usedCoupons.filter(matchesSearch);
+  const visibleExpired = expiredCoupons.filter(matchesSearch);
+
+  const renderNoSearchResults = () => (
+    <Card className="border-neutral-lighter">
+      <CardContent className="p-12 text-center">
+        <Search className="h-12 w-12 text-neutral-medium mx-auto mb-4" aria-hidden />
+        <h3 className="text-lg font-semibold text-text-primary mb-2">No coupons match "{searchQuery.trim()}"</h3>
+        <p className="text-neutral-medium mb-4">Try a brand name, offer title or code.</p>
+        <Button variant="outline" onClick={() => setSearchQuery('')}>
+          Clear search
+        </Button>
+      </CardContent>
+    </Card>
+  );
 
   const getDiscountIcon = (type: string) => {
     switch (type) {
@@ -205,7 +226,7 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
             {coupon.status === 'active' && (
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button size="sm" className="bg-brand-primary text-white hover:bg-brand-primary/90">
+                  <Button size="sm" aria-label="Redeem" className="bg-brand-primary text-white hover:bg-brand-primary/90">
                     <ExternalLink className="h-3 w-3 sm:mr-1" />
                     <span className="hidden sm:inline">Redeem</span>
                   </Button>
@@ -247,12 +268,6 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
                 </DialogContent>
               </Dialog>
             )}
-            {coupon.status === 'redeemed' && (
-              <Button size="sm" variant="outline">
-                <Eye className="h-3 w-3 sm:mr-1" />
-                <span className="hidden sm:inline">View Details</span>
-              </Button>
-            )}
           </div>
         </div>
 
@@ -276,6 +291,7 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
                 size="icon"
                 variant="ghost"
                 className="h-6 w-6 hover:bg-brand-primary/20 outline-none focus:outline-none"
+                aria-label="Copy event link"
                 onClick={() => copyToClipboard(coupon.eventUrl || '', true)}
               >
                 {copied ? <CheckCircle className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
@@ -289,6 +305,7 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
                   size="icon"
                   variant="ghost"
                   className="h-6 w-6 hover:bg-brand-primary/20 outline-none focus:outline-none"
+                  aria-label="Copy coupon code"
                   onClick={() => copyToClipboard(coupon.code || '')}
                 >
                   {copied ? <CheckCircle className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
@@ -346,8 +363,8 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
               <span className="text-neutral-medium">Used on {formatDate(coupon.usedDate)}</span>
               {coupon.originalPrice && coupon.finalPrice && (
                 <div className="flex items-center gap-2">
-                  <span className="text-neutral-medium line-through">${coupon.originalPrice}</span>
-                  <span className="text-success font-semibold">${coupon.finalPrice}</span>
+                  <span className="text-neutral-medium line-through">{formatCurrency(coupon.originalPrice)}</span>
+                  <span className="text-success font-semibold">{formatCurrency(coupon.finalPrice)}</span>
                 </div>
               )}
             </div>
@@ -375,7 +392,7 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
         </Card>
         <Card className="border-neutral-lighter">
           <CardContent className="p-6 text-center">
-            <div className="text-2xl font-bold text-brand-accent mb-1">${totalSavingsFromCoupons.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-brand-accent mb-1">{formatCurrency(totalSavingsFromCoupons)}</div>
             <div className="text-sm text-neutral-medium">Total Savings</div>
           </CardContent>
         </Card>
@@ -394,21 +411,13 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-medium h-4 w-4" />
               <Input
-                placeholder="Search coupons..."
+                type="search"
+                aria-label="Search coupons"
+                placeholder="Search by brand, title or code..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
             </div>
           </div>
         </CardContent>
@@ -418,19 +427,21 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
       <Tabs defaultValue="active" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="active" className="data-[state=active]:bg-brand-primary data-[state=active]:text-white">
-            Active ({activeCoupons.length})
+            Active ({visibleActive.length})
           </TabsTrigger>
           <TabsTrigger value="used" className="data-[state=active]:bg-brand-primary data-[state=active]:text-white">
-            Used ({usedCoupons.length})
+            Used ({visibleUsed.length})
           </TabsTrigger>
           <TabsTrigger value="expired" className="data-[state=active]:bg-brand-primary data-[state=active]:text-white">
-            Expired ({expiredCoupons.length})
+            Expired ({visibleExpired.length})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
-          {activeCoupons.length > 0 ? (
-            activeCoupons.map(renderCouponCard)
+          {visibleActive.length > 0 ? (
+            visibleActive.map(renderCouponCard)
+          ) : searchTerm ? (
+            renderNoSearchResults()
           ) : (
             <Card className="border-neutral-lighter">
               <CardContent className="p-12 text-center">
@@ -447,8 +458,10 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
         </TabsContent>
 
         <TabsContent value="used" className="space-y-4">
-          {usedCoupons.length > 0 ? (
-            usedCoupons.map(renderCouponCard)
+          {visibleUsed.length > 0 ? (
+            visibleUsed.map(renderCouponCard)
+          ) : searchTerm ? (
+            renderNoSearchResults()
           ) : (
             <Card className="border-neutral-lighter">
               <CardContent className="p-12 text-center">
@@ -467,8 +480,10 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
         </TabsContent>
 
         <TabsContent value="expired" className="space-y-4">
-          {expiredCoupons.length > 0 ? (
-            expiredCoupons.map(renderCouponCard)
+          {visibleExpired.length > 0 ? (
+            visibleExpired.map(renderCouponCard)
+          ) : searchTerm ? (
+            renderNoSearchResults()
           ) : (
             <Card className="border-neutral-lighter">
               <CardContent className="p-12 text-center">

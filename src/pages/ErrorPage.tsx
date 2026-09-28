@@ -1,8 +1,10 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Home, RefreshCw } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, Home, RefreshCw } from "lucide-react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import axiosInstance from "@/api/axios";
+import { Category } from "@/types/category";
 
 interface ErrorPageProps {
 	statusCode?: number;
@@ -16,6 +18,15 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
 	message = "The page you are looking for doesn't exist or has been moved.",
 }) => {
 	const navigate = useNavigate();
+	const [categories, setCategories] = React.useState<Category[]>([]);
+
+	React.useEffect(() => {
+		// Nice to have on an error page, so a failure just leaves the "All categories" tile
+		axiosInstance
+			.get("/offer/categories")
+			.then((response) => setCategories(response.data?.data || []))
+			.catch(() => {});
+	}, []);
 
 	const getErrorTitle = () => {
 		switch (statusCode) {
@@ -134,22 +145,30 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
 					Popular Categories
 				</h3>
 				<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-					{["Clothing", "Electronics", "Home & Kitchen", "Beauty"].map(
-						(category) => (
-							<a
-								key={category}
-								href={`/category/${category.toLowerCase().replace(" & ", "-")}`}
-								className="bg-white hover:bg-gray-50 border border-gray-200 rounded-lg p-4 text-center transition duration-300"
-							>
-								<div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
-									<span className="text-pink-600 text-xl font-bold">
-										{category.charAt(0)}
-									</span>
-								</div>
-								<span className="font-medium text-gray-700">{category}</span>
-							</a>
-						)
-					)}
+					{/* Real categories, so every tile lands on results rather than another 404 */}
+					{categories.slice(0, 3).map((category) => (
+						<Link
+							key={category.id}
+							to={`/deals?filters=${category.id}`}
+							className="bg-white hover:bg-gray-50 border border-gray-200 rounded-lg p-4 text-center transition duration-300"
+						>
+							<div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
+								<span className="text-pink-600 text-xl font-bold">
+									{category.name.charAt(0)}
+								</span>
+							</div>
+							<span className="font-medium text-gray-700">{category.name}</span>
+						</Link>
+					))}
+					<Link
+						to="/categories"
+						className="bg-white hover:bg-gray-50 border border-gray-200 rounded-lg p-4 text-center transition duration-300"
+					>
+						<div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
+							<ArrowRight className="text-pink-600" size={20} aria-hidden />
+						</div>
+						<span className="font-medium text-gray-700">All categories</span>
+					</Link>
 				</div>
 			</section>
 

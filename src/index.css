@@ -22,8 +22,24 @@
 @theme {
   --color-foreground: #262628;
 
+  /* Names the shadcn primitives in components/ui style themselves with */
+  --color-primary: #db0271;
+  --color-primary-foreground: #ffffff;
+  --color-secondary-foreground: #262628;
+  --color-muted: #f4f4f4;
+  --color-muted-foreground: #596168;
+  --color-accent: #f4f4f4;
+  --color-accent-foreground: #262628;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #262628;
+  --color-card: #ffffff;
+  --color-card-foreground: #262628;
+  /* Dark enough to give form fields a 3:1 boundary against white */
+  --color-input: #8a9299;
+  --color-ring: #db0271;
+
   --color-brand-primary: #db0271;
-  --color-secondary: #0000ee;
+  --color-secondary: #f4f4f4;
   --color-brand-secondary: #0000ee;
   --color-brand-accent: #148cfc;
   --color-brand-danger: #c72310;
@@ -119,7 +135,7 @@
   --color-foreground: #262628;
 
   --color-brand-primary: #db0271;
-  --color-secondary: #0000ee;
+  --color-secondary: #f4f4f4;
   --color-brand-secondary: #0000ee;
   --color-brand-accent: #148cfc;
   --color-brand-danger: #c72310;
@@ -240,7 +256,7 @@
 }
 
 @utility discount-badge {
-  @apply bg-secondary rounded-full px-2 py-1 text-white font-bold text-xs uppercase tracking-wider;
+  @apply bg-brand-secondary rounded-full px-2 py-1 text-white font-bold text-xs uppercase tracking-wider;
 }
 
 @utility btn-primary {
@@ -248,7 +264,7 @@
 }
 
 @utility btn-secondary {
-  @apply bg-secondary hover:bg-secondary/80 text-white font-medium py-2 px-4 rounded-md transition-all;
+  @apply bg-brand-secondary hover:bg-brand-secondary/80 text-white font-medium py-2 px-4 rounded-md transition-all;
 }
 
 @utility btn-outline {

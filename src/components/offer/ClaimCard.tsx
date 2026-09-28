@@ -9,6 +9,8 @@ interface ClaimCardProps {
     offer: OfferDetails;
     availability: AvailableClaims | null;
     onClaim: () => void;
+    /** Guests can read the offer; the button sends them to sign in instead of claiming. */
+    isAuthenticated?: boolean;
     isLoading: boolean;
     claimError: string | null;
     claimedCoupon: CouponClaimSuccessData | null;
@@ -18,6 +20,7 @@ const ClaimCard: React.FC<ClaimCardProps> = ({
     offer,
     availability,
     onClaim,
+    isAuthenticated = true,
     isLoading,
     claimError,
     claimedCoupon
@@ -44,9 +47,13 @@ const ClaimCard: React.FC<ClaimCardProps> = ({
                                     {isEvent ? "Ready to join?" : "Ready to save?"}
                                 </h3>
                                 <p className="text-text-secondary">
-                                    {isEvent
-                                        ? "Register now to get the event link and QR code."
-                                        : "Claim this deal now to get your unique code."}
+                                    {!isAuthenticated
+                                        ? isEvent
+                                            ? "Sign in with your student account to register and get the event link."
+                                            : "Sign in with your student account to claim this deal and get your code."
+                                        : isEvent
+                                            ? "Register now to get the event link and QR code."
+                                            : "Claim this deal now to get your unique code."}
                                 </p>
                             </div>
 
@@ -68,7 +75,7 @@ const ClaimCard: React.FC<ClaimCardProps> = ({
 
                             {/* Error Message */}
                             {claimError && (
-                                <div className="bg-destructive/10 text-destructive text-sm p-4 rounded-lg flex items-start gap-3">
+                                <div role="alert" className="bg-destructive/10 text-destructive text-sm p-4 rounded-lg flex items-start gap-3">
                                     <AlertCircle className="shrink-0 mt-0.5" size={16} />
                                     <p>{claimError}</p>
                                 </div>
@@ -84,9 +91,14 @@ const ClaimCard: React.FC<ClaimCardProps> = ({
                                     <Loader2 className="animate-spin mr-2" />
                                 ) : (
                                     <>
-                                        {isEvent ? "Register Now" : "Claim Offer"}
+                                        {!isAuthenticated
+                                            ? isEvent ? "Sign in to register" : "Sign in to claim"
+                                            : isEvent ? "Register Now" : "Claim Offer"}
                                         <ArrowRight className="ml-2 group-hover:translate-x-1" size={20} />
                                     </>
+                                )}
+                                {isLoading && (
+                                    <span className="sr-only">{isEvent ? "Registering…" : "Claiming…"}</span>
                                 )}
                             </Button>
 

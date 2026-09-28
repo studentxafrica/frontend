@@ -79,10 +79,12 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <label className="block text-sm font-medium text-slate-700">First Name</label>
+                        <label htmlFor="first-name" className="block text-sm font-medium text-slate-700">First Name</label>
                         <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                             <input
+                                id="first-name"
+                                autoComplete="given-name"
                                 type="text"
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
@@ -92,9 +94,11 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <label className="block text-sm font-medium text-slate-700">Last Name</label>
+                        <label htmlFor="last-name" className="block text-sm font-medium text-slate-700">Last Name</label>
                         <div className="relative">
                             <input
+                                id="last-name"
+                                autoComplete="family-name"
                                 type="text"
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
@@ -106,10 +110,12 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                 </div>
 
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">Phone Number</label>
+                    <label htmlFor="phone" className="block text-sm font-medium text-slate-700">Phone Number</label>
                     <div className="relative phone-input-container">
                         {/* PhoneInput comes with its own styles, might need custom styling to match */}
                         <PhoneInput
+                            id="phone"
+                            autoComplete="tel"
                             value={phone}
                             onChange={(val) => setPhone(val || '')}
                             defaultCountry="KE"
@@ -120,10 +126,11 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                 </div>
 
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">University</label>
+                    <label htmlFor="university" className="block text-sm font-medium text-slate-700">University</label>
                     <div className="relative">
                         <School className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         <input
+                            id="university"
                             type="text"
                             value={university}
                             onChange={(e) => setUniversity(e.target.value)}
@@ -134,10 +141,12 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                 </div>
 
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">Date of Birth</label>
+                    <label htmlFor="dob" className="block text-sm font-medium text-slate-700">Date of Birth</label>
                     <div className="relative">
                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         <input
+                            id="dob"
+                            autoComplete="bday"
                             type="date"
                             value={dob}
                             onChange={(e) => setDob(e.target.value)}
@@ -151,6 +160,7 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
+                        role="alert"
                         className="p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2"
                     >
                         <AlertCircle size={16} />
@@ -179,7 +189,8 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                         <Loader2 className="animate-spin" size={18} />
                     ) : (
                         <>
-                            Create Account
+                            {/* No password means the account was already created on an earlier pass */}
+                            {password ? 'Create Account' : 'Continue'}
                             <ArrowRight size={18} />
                         </>
                     )}

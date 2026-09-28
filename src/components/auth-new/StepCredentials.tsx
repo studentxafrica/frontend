@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, ArrowRight, Loader2, AlertCircle, Mail, Edit2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { isAxiosError } from 'axios';
 import axiosInstance from '@/api/axios';
 import { setCurrentUser } from '@/state/auth';
 import { useDispatch } from 'react-redux';
@@ -9,9 +10,17 @@ import { useDispatch } from 'react-redux';
 interface StepCredentialsProps {
     onNext: (data: { email: string; password?: string; isLogin: boolean }) => void;
     initialEmail?: string;
+    /** Which link brought the student here, so the first screen greets them correctly. */
+    intent?: 'login' | 'signup';
 }
 
-export const StepCredentials: React.FC<StepCredentialsProps> = ({ onNext, initialEmail = '' }) => {
+const EMAIL_STEP_COPY = {
+    login: { title: 'Welcome back', description: 'Enter your email to sign in.' },
+    signup: { title: 'Create your account', description: 'Enter your email to get started.' },
+    unknown: { title: 'Sign in or create an account', description: 'Enter your email to continue.' },
+};
+
+export const StepCredentials: React.FC<StepCredentialsProps> = ({ onNext, initialEmail = '', intent }) => {
     const [step, setStep] = useState<'email' | 'password'>('email');
     const [email, setEmail] = useState(initialEmail);
     const [password, setPassword] = useState('');
@@ -46,7 +55,10 @@ export const StepCredentials: React.FC<StepCredentialsProps> = ({ onNext, initia
 
             setStep('password');
         } catch (err) {
-            console.log(err);
+            setError(
+                (isAxiosError(err) && err.response?.data?.message)
+                || "We couldn't check that email. Check your connection and try again."
+            );
         } finally {
             setLoading(false);
         }
@@ -157,17 +169,17 @@ export const StepCredentials: React.FC<StepCredentialsProps> = ({ onNext, initia
             <div className="mb-8">
                 <h2 className="text-3xl font-bold tracking-tight text-slate-900 mb-2">
                     {step === 'email'
-                        ? 'Welcome back!'
-                        : isLogin ? 'Welcome back!' : 'Create an account'}
+                        ? EMAIL_STEP_COPY[intent ?? 'unknown'].title
+                        : isLogin ? 'Welcome back' : 'Create your account'}
                 </h2>
                 <p className="text-slate-500">
                     {step === 'email'
-                        ? 'Please enter your details to get started.'
+                        ? EMAIL_STEP_COPY[intent ?? 'unknown'].description
                         : isLogin ? 'Enter your password to access your account.' : 'Set a password for your new account.'}
                 </p>
             </div>
 
-            <form onSubmit={step === 'email' && !isLogin ? handleEmailSubmit : handleFinalSubmit} className="space-y-5">
+            <form onSubmit={step === 'email' ? handleEmailSubmit : handleFinalSubmit} className="space-y-5">
 
                 {/* Email Input Step */}
                 {step === 'email' && (
@@ -208,18 +220,25 @@ export const StepCredentials: React.FC<StepCredentialsProps> = ({ onNext, initia
                                     <UserIcon />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">Signing in as</span>
+                                    <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">
+                                        {isLogin ? 'Signing in as' : 'Creating account for'}
+                                    </span>
                                     <span className="text-sm font-semibold text-slate-900 truncate">{email}</span>
                                 </div>
                             </div>
                             <button
                                 type="button"
                                 onClick={() => {
+                                    // A different email needs checking again, so drop what was
+                                    // decided about the old one
                                     setStep('email');
+                                    setIsLogin(false);
+                                    setPassword('');
                                     setError('');
                                 }}
                                 className="p-2 hover:bg-white rounded-lg text-indigo-600 hover:text-indigo-700 transition-colors"
                                 title="Edit email"
+                                aria-label="Edit email"
                             >
                                 <Edit2 size={16} />
                             </button>
@@ -231,9 +250,12 @@ export const StepCredentials: React.FC<StepCredentialsProps> = ({ onNext, initia
                                     Password
                                 </label>
                                 {isLogin && (
-                                    <button type="button" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                                    <Link
+                                        to={`/reset-password?email=${encodeURIComponent(email)}`}
+                                        className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
+                                    >
                                         Forgot password?
-                                    </button>
+                                    </Link>
                                 )}
                             </div>
                             <div className="relative">
@@ -249,6 +271,8 @@ export const StepCredentials: React.FC<StepCredentialsProps> = ({ onNext, initia
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                    aria-pressed={showPassword}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -268,6 +292,7 @@ export const StepCredentials: React.FC<StepCredentialsProps> = ({ onNext, initia
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
+                        role="alert"
                         className="p-4 bg-red-50 text-red-700 text-sm rounded-xl flex items-start gap-3 border border-red-100"
                     >
                         <AlertCircle size={18} className="mt-0.5 shrink-0" />

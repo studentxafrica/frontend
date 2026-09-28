@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import ImagePreview from '@/components/ui/image-preview';
 import Countdown from './Countdown';
 import { UsageType, OfferKind } from '@/types/offer';
+import { DEFAULT_CURRENCY, formatCurrency } from '@/lib/currency';
 
 /**
  * Only what the card actually renders. Kept separate from the full `Offer` so
@@ -37,29 +38,13 @@ const DISCOUNT_TYPES = {
 	free: 'free',
 };
 
-const formatCurrency = (value: number, currency: string) => {
-	const locale = window.navigator.language || 'en-US';
-	const symbol = new Intl.NumberFormat(locale, {
-		style: 'currency',
-		currency,
-		currencyDisplay: 'symbol',
-	})
-		.formatToParts(1)
-		.find((part) => part.type === 'currency')?.value ?? '';
-
-	return `${symbol} ${value.toLocaleString(locale, {
-		minimumFractionDigits: 0,
-		maximumFractionDigits: 2,
-	})}`;
-};
-
 /** The headline number a student scans for first. */
 const formatReward = (offer: OfferCardOffer) => {
 	switch (offer.discountType) {
 		case DISCOUNT_TYPES.percentage:
 			return `${offer.discountValue}% off`;
 		case DISCOUNT_TYPES.fixed:
-			return `${formatCurrency(offer.discountValue, offer.currency || 'USD')} off`;
+			return `${formatCurrency(offer.discountValue, offer.currency || DEFAULT_CURRENCY)} off`;
 		case DISCOUNT_TYPES.bogo:
 			return 'Buy one, get one';
 		default:

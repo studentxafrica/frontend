@@ -2,7 +2,6 @@ import * as React from "react";
 import { Cta, QuietLink } from "@/components/ui/cta";
 import { Offer } from "@/types/offer";
 import axiosInstance from "@/api/axios";
-import { toast } from "@/components/ui/use-toast";
 import OfferCardSkeleton from "./offers/OfferCardSkeleton";
 import ServerError from "./ServerError";
 import OfferCard from "./offers/OfferCard";
@@ -23,18 +22,11 @@ const FeaturedOffers = () => {
       const response = await axiosInstance.get('/offer/featured');
       setFeaturedOffers(response.data);
     } catch (error) {
-      if (error.response && error.response.status >= 500) {
-        setError({
-          title: error.response?.data?.message || "Error fetching featured offers",
-          description: error.response?.data?.description || error.message || "Something went wrong",
-        })
-      } else {
-        toast({
-          title: "Error fetching featured offers",
-          description: error.response?.data?.message || "Something went wrong",
-          variant: "destructive"
-        });
-      }
+      // Any failure, including no network, is shown inline rather than as "nothing featured"
+      setError({
+        title: "We couldn't load featured offers",
+        description: "Check your connection and try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -60,7 +52,7 @@ const FeaturedOffers = () => {
 
         <div className="mt-12">
           {error ? (
-            <ServerError onRetry={fetchFeaturedOffers} />
+            <ServerError title={error.title} description={error.description} onRetry={fetchFeaturedOffers} />
           ) : loading ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {[...Array(4)].map((_, i) => (
