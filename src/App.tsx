@@ -6,14 +6,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import { RootState } from "./state";
 
 import DefaultLayout from "./layout/DefaultLayout";
 
 import Index from "./pages/Index";
-import HowItWorks from "./pages/HowItWorks";
+import About from "./pages/About";
 import Categories from "./pages/Categories";
 import CouponDeals from "./pages/CouponDeals";
 import AuthPage from "./pages/Login";
@@ -29,6 +29,13 @@ import DataConsent from "./pages/legal/DataConsent";
 import ErrorPage from "./pages/ErrorPage";
 import HelpCenter from "./pages/HelpCenter";
 import NetworkStatus from "./components/NetworkStatus";
+import FestiveDrops from "./pages/FestiveDrops";
+import DropDetails from "./pages/DropDetails";
+import DropTerms from "./pages/DropTerms";
+import DropPass from "./pages/DropPass";
+import DropCrew from "./pages/DropCrew";
+import CrewInvite from "./pages/CrewInvite";
+import PassCheck from "./pages/PassCheck";
 
 const queryClient = new QueryClient();
 
@@ -87,6 +94,8 @@ const App = () => {
               true ? <AuthNew /> : <AuthPage />
             } />
             <Route path="/categories" element={<Categories />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/how-it-works" element={<Navigate to="/about" replace />} />
             <Route path="/deals" element={<CouponDeals />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/auth/user/confirm-reset-password" element={<ConfirmPasswordReset />} />
@@ -96,6 +105,15 @@ const App = () => {
             <Route path="/offer/:id" element={<OfferDetailsNew />} />
             <Route path="/offer-new/:id" element={<OfferDetailsNew />} />
 
+            {/* Festive Drops: public pages; actions ask for sign-in on the page */}
+            <Route path="/drops" element={<FestiveDrops />} />
+            <Route path="/drops/terms" element={<DropTerms />} />
+            <Route path="/drops/:id" element={<DropDetails />} />
+            <Route path="/drops/perks/:pickId/pass" element={<DropPass />} />
+            <Route path="/drops/perks/:pickId/crew" element={<DropCrew />} />
+            <Route path="/crew/:code" element={<CrewInvite />} />
+            <Route path="/pass-check" element={<PassCheck />} />
+
             {/* Routes that need a signed-in user */}
             <Route element={<DefaultLayout />}>
 
@@ -104,7 +122,6 @@ const App = () => {
                 <Profile />
                 // </ProtectedRoute>
               } />
-              <Route path="/how-it-works" element={<HowItWorks />} />
             </Route>
 
             <Route path="/terms" element={<TermsOfUse />} />

@@ -85,6 +85,13 @@ const AuthNew = () => {
         // The account exists once this step succeeds. Dropping the password stops a
         // Back-and-resubmit from registering the same email again, and keeps it out of storage.
         dispatch({ type: 'UPDATE_DATA', payload: { ...data, password: undefined } });
+        if (next) {
+            // Signing up from somewhere (such as Festive Drops): go straight back.
+            // The student can verify their ID from there whenever they're ready.
+            localStorage.removeItem('auth_flow_state');
+            navigate(next);
+            return;
+        }
         dispatch({ type: 'SET_STEP', payload: 'verification' });
     };
 

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 
 @plugin 'tailwindcss-animate';
@@ -20,6 +21,7 @@
 }
 
 @theme {
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
   --color-foreground: #262628;
 
   /* Names the shadcn primitives in components/ui style themselves with */

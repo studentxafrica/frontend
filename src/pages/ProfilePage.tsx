@@ -15,6 +15,7 @@ import { PreferencesSettings } from "@/components/profile/PreferencesSettings";
 import { AccountSettings } from "@/components/profile/AccountSettings";
 import { OnboardingChecklist } from "@/components/profile/OnboardingChecklist";
 import { CouponTracker } from '@/components/profile/CouponTracker';
+import DropsTab from '@/components/profile/DropsTab';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 import { StudentBusinessPromo } from '@/components/profile/StudentBusinessPromo';
 import Header from '@/components/Header';
@@ -211,6 +212,12 @@ const Profile = () => {
 												Coupons
 											</TabsTrigger>
 											<TabsTrigger
+												value="drops"
+												className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-brand-primary px-2 py-3 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
+											>
+												Drops
+											</TabsTrigger>
+											<TabsTrigger
 												value="saved"
 												className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-brand-primary px-2 py-3 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
 											>
@@ -264,6 +271,14 @@ const Profile = () => {
 											<div>
 												<h2 className="text-xl font-bold text-text-primary mb-6">Your Coupons</h2>
 												<CouponTracker user={userData} />
+											</div>
+										</TabsContent>
+
+										<TabsContent value="drops" className="mt-0 focus-visible:outline-none">
+											<div>
+												<h2 className="text-xl font-bold text-text-primary mb-1">StudentXmas</h2>
+												<p className="text-text-secondary mb-6">Perks you were picked for, and what to do next.</p>
+												<DropsTab />
 											</div>
 										</TabsContent>
 

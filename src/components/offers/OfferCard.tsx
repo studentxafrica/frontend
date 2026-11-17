@@ -88,7 +88,7 @@ const OfferCard = ({ offer }: { offer: OfferCardOffer }) => {
 	return (
 		<Link
 			to={`/offer/${offer.id}`}
-			className="group flex h-full w-full flex-col border border-neutral-200 bg-white transition-colors hover:border-neutral-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+			className="group flex h-full w-full flex-col overflow-hidden rounded-[22px] border border-[#ead8e0] bg-white transition duration-200 hover:-translate-y-1 hover:shadow-[0_10px_0_#f1dfe7] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
 		>
 			<ImagePreview
 				src={offer.coverImage}

@@ -38,7 +38,7 @@ interface SavedDeal {
   category: string;
   originalPrice: number;
   salePrice: number;
-  savings: number;
+  savings: number | null;
   expiryDate: string;
   isLimited: boolean;
   savedDate: string;
@@ -160,14 +160,16 @@ export const SavedDeals: React.FC<SavedDealsProps> = ({ user }) => {
             <div className="text-sm text-neutral-medium">Saved Deals</div>
           </CardContent>
         </Card>
-        <Card className="border-neutral-lighter">
-          <CardContent className="p-6 text-center">
-            <div className="text-2xl font-bold text-success mb-1">
-              {formatCurrency(savedDeals.reduce((total, deal) => total + (deal.savings || 0), 0))}
-            </div>
-            <div className="text-sm text-neutral-medium">Potential Savings</div>
-          </CardContent>
-        </Card>
+        {savedDeals.some((deal) => deal.savings) && (
+          <Card className="border-neutral-lighter">
+            <CardContent className="p-6 text-center">
+              <div className="text-2xl font-bold text-success mb-1">
+                {formatCurrency(savedDeals.reduce((total, deal) => total + (deal.savings || 0), 0))}
+              </div>
+              <div className="text-sm text-neutral-medium">Potential Savings</div>
+            </CardContent>
+          </Card>
+        )}
         <Card className="border-neutral-lighter">
           <CardContent className="p-6 text-center">
             <div className="text-2xl font-bold text-warning mb-1">

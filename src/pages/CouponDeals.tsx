@@ -24,6 +24,7 @@ import { toast } from "@/hooks/use-toast";
 import axiosInstance from "@/api/axios";
 import OfferCardSkeleton from "@/components/offers/OfferCardSkeleton";
 import ServerError from "@/components/ServerError";
+import CampaignBanner from "@/components/drops/CampaignBanner";
 
 interface Offer {
   id: string;
@@ -326,6 +327,8 @@ const CouponDeals = () => {
           </div>
         </div>
       </div>
+
+      <CampaignBanner />
 
       <div className="container px-4 py-8 w-full">
         {/* Active Filters */}
