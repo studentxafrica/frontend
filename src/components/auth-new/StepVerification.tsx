@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Upload, X, FileText, Loader2 } from 'lucide-react';
 import axiosInstance from '@/api/axios';
 import { toast } from '@/hooks/use-toast';
+import { shrinkImage } from '@/lib/shrinkImage';
 
 interface StepVerificationProps {
     onNext: () => void;
@@ -35,29 +36,32 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFileUpload = (files: FileList | null) => {
+    const [uploadError, setUploadError] = useState('');
+
+    const handleFileUpload = async (files: FileList | null) => {
         if (!files || files.length === 0) return;
         const filesArray = Array.from(files);
 
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = 15 * 1024 * 1024; // 15MB, before shrinking
         const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
 
         const newDocuments: DocumentRecord[] = [];
+        setUploadError('');
 
         for (let index = 0; index < filesArray.length; index += 1) {
             const file = filesArray[index];
             if (file.size > maxSize) {
-                alert(`File size must be less than 5MB: ${file.name}`);
+                setUploadError(`${file.name} is larger than 15MB. Try a smaller photo.`);
                 return;
             }
             if (!validTypes.includes(file.type)) {
-                alert(`Please upload a PDF, JPG, or PNG file: ${file.name}`);
+                setUploadError(`${file.name} isn't a PDF, JPG or PNG file.`);
                 return;
             }
 
             newDocuments.push({
                 id: `${Date.now()}-${index}`,
-                file,
+                file: await shrinkImage(file),
                 type: defaultDocumentType || undefined
             });
         }
@@ -70,11 +74,6 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
     };
 
     const submitVerification = async () => {
-
-        if (!academicInfo.program || !academicInfo.studentId || !academicInfo.expectedGraduation) {
-            alert('Please fill in all required academic information');
-            return;
-        }
 
         if (documents.length < 1) {
             alert('Please upload at least one document with enough information');
@@ -241,7 +240,7 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
                     >
                         <Upload className="text-slate-400 mb-2" aria-hidden />
                         <span className="text-sm font-medium text-slate-900">Choose documents to upload</span>
-                        <span className="text-xs text-slate-500">Student ID, Transcript, or Enrollment Letter · PDF, JPG or PNG up to 5MB</span>
+                        <span className="text-xs text-slate-500">Student ID, Transcript, or Enrollment Letter · PDF, JPG or PNG up to 15MB</span>
                         <input
                             id="verification-documents"
                             ref={fileInputRef}
@@ -252,6 +251,10 @@ export const StepVerification: React.FC<StepVerificationProps> = ({ onNext, user
                             onChange={(e) => handleFileUpload(e.target.files)}
                         />
                     </label>
+
+                    {uploadError && (
+                        <p role="alert" className="text-sm text-red-700">{uploadError}</p>
+                    )}
 
                     {documents.length > 0 && (
                         <div className="space-y-2">
