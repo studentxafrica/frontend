@@ -390,12 +390,14 @@ export const CouponTracker: React.FC<CouponTrackerProps> = ({ user }) => {
             <div className="text-sm text-neutral-medium">Used Coupons</div>
           </CardContent>
         </Card>
-        <Card className="border-neutral-lighter">
-          <CardContent className="p-6 text-center">
-            <div className="text-2xl font-bold text-brand-accent mb-1">{formatCurrency(totalSavingsFromCoupons)}</div>
-            <div className="text-sm text-neutral-medium">Total Savings</div>
-          </CardContent>
-        </Card>
+        {totalSavingsFromCoupons > 0 && (
+          <Card className="border-neutral-lighter">
+            <CardContent className="p-6 text-center">
+              <div className="text-2xl font-bold text-brand-accent mb-1">{formatCurrency(totalSavingsFromCoupons)}</div>
+              <div className="text-sm text-neutral-medium">Total Savings</div>
+            </CardContent>
+          </Card>
+        )}
         <Card className="border-neutral-lighter">
           <CardContent className="p-6 text-center">
             <div className="text-2xl font-bold text-warning mb-1">{expiredCoupons.length}</div>

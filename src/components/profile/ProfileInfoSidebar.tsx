@@ -20,7 +20,7 @@ interface ProfileInfoSidebarProps {
         joinDate: string;
         isVerified: boolean;
         dealsUsed: number;
-        totalSavings: number;
+        totalSavings: number | null;
         website?: string;
         bio?: string;
     };
@@ -146,10 +146,12 @@ export const ProfileInfoSidebar: React.FC<ProfileInfoSidebarProps> = ({ user, on
                     <span className="font-bold text-text-primary">{user.dealsUsed}</span>
                     <span className="text-text-secondary">Deals Used</span>
                 </div>
-                <div className="flex gap-1.5">
-                    <span className="font-bold text-text-primary">{formatCurrency(user.totalSavings ?? 0)}</span>
-                    <span className="text-text-secondary">Saved</span>
-                </div>
+                {user.totalSavings != null && (
+                    <div className="flex gap-1.5">
+                        <span className="font-bold text-text-primary">{formatCurrency(user.totalSavings)}</span>
+                        <span className="text-text-secondary">Saved</span>
+                    </div>
+                )}
             </div>
 
             {/* Meta Details */}
