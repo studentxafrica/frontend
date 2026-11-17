@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Loader2, AlertCircle, User, Phone, School, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '@/api/axios';
+import { useDispatch } from 'react-redux';
+import { setCurrentUser } from '@/state/auth';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 
@@ -22,11 +24,13 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
     const [dob, setDob] = useState(initialData?.dob || '');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const dispatch = useDispatch();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!firstName || !lastName || !phone || !university || !dob) {
-            setError('Please fill in all fields');
+        // Only a name is needed to create the account; the rest can come later.
+        if (!firstName || !lastName) {
+            setError('Please enter your first and last name');
             return;
         }
 
@@ -42,14 +46,15 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                     email: email,
                     password: password,
                     school: university,
-                    // Extra fields might need a separate update call if register endpoint is strict
+                    // Kept on the profile: airtime perks are sent to this number.
+                    phone: phone || undefined,
+                    date_of_birth: dob || undefined,
                 });
 
                 if (response.status === 201) {
-                    // User created. Now update with extra details if needed (phone, dob)
-                    // Login first if needed or use returned token.
-                    // For now assume success and proceed to verification
-                    // Ideally we'd log them in here automatically
+                    // Registration signs the student in (it sets the session cookie);
+                    // record that here too, so the rest of the site knows.
+                    dispatch(setCurrentUser({ user: response.data.user, role: response.data.user_role }));
                     onNext({ firstName, lastName, phone, university, dob });
                 }
             } else {
@@ -110,7 +115,7 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                 </div>
 
                 <div className="space-y-2">
-                    <label htmlFor="phone" className="block text-sm font-medium text-slate-700">Phone Number</label>
+                    <label htmlFor="phone" className="block text-sm font-medium text-slate-700">Phone Number <span className="font-normal text-slate-400">(optional)</span></label>
                     <div className="relative phone-input-container">
                         {/* PhoneInput comes with its own styles, might need custom styling to match */}
                         <PhoneInput
@@ -126,7 +131,7 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                 </div>
 
                 <div className="space-y-2">
-                    <label htmlFor="university" className="block text-sm font-medium text-slate-700">University</label>
+                    <label htmlFor="university" className="block text-sm font-medium text-slate-700">University <span className="font-normal text-slate-400">(optional)</span></label>
                     <div className="relative">
                         <School className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         <input
@@ -141,7 +146,7 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                 </div>
 
                 <div className="space-y-2">
-                    <label htmlFor="dob" className="block text-sm font-medium text-slate-700">Date of Birth</label>
+                    <label htmlFor="dob" className="block text-sm font-medium text-slate-700">Date of Birth <span className="font-normal text-slate-400">(optional)</span></label>
                     <div className="relative">
                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         <input
