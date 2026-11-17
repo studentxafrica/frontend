@@ -7,7 +7,8 @@ import ResultCard from '@/components/drops/ResultCard';
 import StatusCard from '@/components/drops/StatusCard';
 import ServerError from '@/components/ServerError';
 import { toast } from '@/hooks/use-toast';
-import { CampaignView, Drop, formatDropWhen, getCampaign, quantityLabel } from '@/api/drops';
+import { CampaignView, Drop, countdownLabel, formatDropWhen, getCampaign, quantityLabel } from '@/api/drops';
+import { dropPhoto } from '@/components/drops/DropVisual';
 
 const HERO_TINTS: Record<string, string> = {
 	airtime: 'from-[#3f6b55] to-[#1f3a2e]',
@@ -69,11 +70,11 @@ const DropDetails = () => {
 								</div>
 
 								<div className={`relative aspect-video overflow-hidden rounded-xl bg-linear-to-br shadow-sm ${HERO_TINTS[drop.kind]}`}>
-									{drop.coverImage && <img src={drop.coverImage} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+									<img src={drop.coverImage || dropPhoto(drop)} alt="" className="absolute inset-0 h-full w-full object-cover" />
 									<div className="absolute inset-0 bg-neutral-950/30" />
 									<div className="absolute bottom-0 left-0 w-full p-6 sm:p-8">
 										<span className="mb-4 inline-block rounded-full bg-background/90 px-4 py-1 text-lg font-bold tracking-wide text-text-primary">
-											{drop.status === 'ended' ? 'ENDED' : drop.isNext ? 'NEXT DROP' : `DROP ${drop.number} OF ${drop.total}`}
+											{drop.status === 'ended' ? 'ENDED' : drop.isNext ? `NEXT DROP · ${countdownLabel(drop.pickAt).toUpperCase()}` : countdownLabel(drop.pickAt).toUpperCase()}
 										</span>
 										<h1 className="mb-2 text-3xl font-bold leading-tight text-text-inverted sm:text-4xl md:text-5xl">{drop.title}</h1>
 									</div>
@@ -97,7 +98,7 @@ const DropDetails = () => {
 											<div className="space-y-3 rounded-xl border border-border-subtle bg-background p-6 text-center shadow-sm sm:p-8">
 												<h2 className="text-2xl font-bold text-text-primary">You're in this drop</h2>
 												<p className="text-text-secondary">Picked at random at {formatDropWhen(drop.pickAt)}. We'll tell you here and by email if it's you.</p>
-												<p className="flex items-center justify-center gap-1.5 text-xs font-medium text-text-tertiary"><span className="h-2 w-2 rounded-full bg-success" />Drop {drop.number} of {drop.total}</p>
+												<p className="flex items-center justify-center gap-1.5 text-xs font-medium text-text-tertiary"><span className="h-2 w-2 rounded-full bg-success" />Drops {countdownLabel(drop.pickAt).toLowerCase()}</p>
 											</div>
 										)
 										: <StatusCard view={view} onJoined={setView} returnTo={`/drops/${drop.id}`} />}

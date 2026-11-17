@@ -129,6 +129,32 @@ export const formatDropTime = (iso: string) =>
 
 export const formatDropWhen = (iso: string) => `${formatDropDay(iso)}, ${formatDropTime(iso)}`;
 
+/** Calendar days in Nairobi from today until the drop: 0 today, 1 tomorrow. */
+const daysUntil = (iso: string) => {
+	const day = (d: Date) => new Date(d.toLocaleDateString('en-CA', { timeZone: EAT })).getTime();
+	return Math.round((day(new Date(iso)) - day(new Date())) / 86_400_000);
+};
+
+/** "Today", "Tomorrow", "In 5 days". */
+export const countdownLabel = (iso: string) => {
+	const days = daysUntil(iso);
+	return days <= 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`;
+};
+
+/** Airtime is one perk however many times it drops; other perks are their own. */
+export const perkKey = (drop: Pick<Drop, 'kind' | 'title'>) => (drop.kind === 'airtime' ? 'airtime' : drop.title.toLowerCase());
+
+/** The next drop of each perk, soonest first. */
+export const nextOfEachPerk = (drops: Drop[]) => {
+	const seen = new Set<string>();
+	return drops.filter((drop) => {
+		const key = perkKey(drop);
+		if (seen.has(key)) return false;
+		seen.add(key);
+		return true;
+	});
+};
+
 export const quantityLabel = (drop: Pick_<Drop, 'kind' | 'quantity' | 'crewSize'>) =>
 	drop.kind === 'crew'
 		? `${drop.quantity} crew pass${drop.quantity === 1 ? '' : 'es'} for ${drop.crewSize}`
