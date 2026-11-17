@@ -34,7 +34,7 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
       {eyebrow && (
         <p
           className={cn(
-            "text-xs font-semibold uppercase tracking-[0.2em]",
+            "text-xs font-bold uppercase tracking-[0.2em]",
             tone === "dark" ? "text-neutral-400" : "text-neutral-500"
           )}
         >
@@ -43,7 +43,7 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
       )}
       <h2
         className={cn(
-          "text-3xl font-semibold leading-[1.1] tracking-tight sm:text-4xl",
+          "text-3xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-4xl",
           eyebrow && "mt-4",
           tone === "dark" ? "text-white" : "text-neutral-900"
         )}

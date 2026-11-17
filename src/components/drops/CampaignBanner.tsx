@@ -22,21 +22,22 @@ const CampaignBanner = () => {
 		<section aria-label="StudentXmas" className="w-full bg-white px-4 py-6">
 			<Link
 				to="/drops"
-				className="mx-auto flex max-w-5xl flex-col gap-4 rounded-xl border border-brand-primary/30 bg-brand-primary/5 p-5 transition-colors hover:bg-brand-primary/10 sm:flex-row sm:items-center"
+				className="group relative mx-auto flex max-w-5xl flex-col gap-4 overflow-hidden rounded-[28px] bg-brand-primary p-6 text-white shadow-[0_10px_0_#ead8e0] transition duration-200 hover:-translate-y-0.5 sm:flex-row sm:items-center motion-reduce:transition-none"
 			>
-				<span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-primary text-white">
+				<span aria-hidden className="pointer-events-none absolute -right-8 -top-10 size-32 rounded-full bg-[#ffdd70]/90" />
+				<span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-brand-primary">
 					<Gift className="h-6 w-6" aria-hidden />
 				</span>
-				<span className="flex-1">
-					<span className="block text-xs font-semibold uppercase tracking-wider text-brand-primary">Now on · StudentXmas</span>
-					<span className="mt-1 block text-lg font-semibold text-text-primary">
+				<span className="relative flex-1">
+					<span className="inline-block rounded-full bg-[#ffdd70] px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-[#24131d]">Now on · StudentXmas</span>
+					<span className="mt-2 block text-xl font-extrabold tracking-[-0.02em]">
 						Airtime, vouchers, bowling and go-karting: {total} drops, every Mon, Wed and Fri
 					</span>
-					<span className="mt-0.5 block text-sm text-text-secondary">
+					<span className="mt-1 block text-sm text-white/85">
 						Next: {view.nextDrop.title}, {formatDropWhen(view.nextDrop.pickAt)}
 					</span>
 				</span>
-				<span className="inline-flex items-center gap-2 font-semibold text-brand-primary">
+				<span className="relative inline-flex items-center gap-2 self-start rounded-full bg-[#24131d] px-5 py-2.5 text-sm font-bold text-white sm:self-auto">
 					{joined ? 'See your drops' : 'Join StudentXmas'}<ArrowRight className="h-4 w-4" aria-hidden />
 				</span>
 			</Link>
