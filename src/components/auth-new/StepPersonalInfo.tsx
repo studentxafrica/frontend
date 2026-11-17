@@ -22,6 +22,8 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
     const [phone, setPhone] = useState(initialData?.phone || '');
     const [university, setUniversity] = useState(initialData?.university || '');
     const [dob, setDob] = useState(initialData?.dob || '');
+    // Promotional email is opt-in: unticked until the student ticks it
+    const [marketingEmails, setMarketingEmails] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const dispatch = useDispatch();
@@ -49,6 +51,7 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                     // Kept on the profile: airtime perks are sent to this number.
                     phone: phone || undefined,
                     date_of_birth: dob || undefined,
+                    marketing_consent: marketingEmails,
                 });
 
                 if (response.status === 201) {
@@ -171,6 +174,19 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ onNext, emai
                         <AlertCircle size={16} />
                         {error}
                     </motion.div>
+                )}
+
+                {password && (
+                    <label htmlFor="marketing-emails" className="flex cursor-pointer items-start gap-3 text-sm text-slate-700">
+                        <input
+                            id="marketing-emails"
+                            type="checkbox"
+                            checked={marketingEmails}
+                            onChange={(e) => setMarketingEmails(e.target.checked)}
+                            className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 accent-black"
+                        />
+                        <span>Email me new offers, StudentXmas drops and events. You can turn this off any time on your profile.</span>
+                    </label>
                 )}
 
                 <p className="text-xs text-slate-500 leading-relaxed">

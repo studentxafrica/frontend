@@ -1,5 +1,7 @@
 
 import React, { useState } from 'react';
+import axiosInstance from '@/api/axios';
+import { toast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -74,18 +76,17 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
 
   return (
     <div className="space-y-6">
-      {/* Nothing here can be stored yet, so say so up front instead of letting changes vanish */}
+      <MarketingEmails initial={!!user?.marketingEmails} />
+
+      {/* Nothing below can be stored yet, so say so up front instead of letting changes vanish */}
       <div
         id="preferences-unavailable"
         className="flex items-start gap-3 rounded-lg border border-border bg-background-subtle p-4 text-sm text-text-primary"
       >
         <Clock className="mt-0.5 h-4 w-4 shrink-0 text-neutral-medium" aria-hidden />
         <p>
-          <span className="font-semibold">Coming soon.</span> Saving preferences isn't available yet, so
-          these settings are shown for reference only. To change how we contact you, email{' '}
-          <a href="mailto:support@studentx.co.ke" className="font-medium text-brand-primary underline underline-offset-2">
-            support@studentx.co.ke
-          </a>.
+          <span className="font-semibold">Coming soon.</span> The settings below can't be saved yet,
+          so they're shown for reference only.
         </p>
       </div>
 
@@ -108,21 +109,6 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-brand-primary" />
-                  <Label htmlFor="email-deals">Email Deals</Label>
-                </div>
-                <Switch
-                  id="email-deals"
-                  className={`${preferences.emailDeals ? 'bg-brand-primary' : 'bg-gray-300'}`}
-                  checked={preferences.emailDeals}
-                  onCheckedChange={(checked) =>
-                    setPreferences(prev => ({ ...prev, emailDeals: checked }))
-                  }
-                />
-              </div>
-
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Bell className="h-4 w-4 text-brand-primary" />
@@ -418,23 +404,6 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
                 }
               />
             </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-brand-primary" />
-                <div>
-                  <Label htmlFor="marketing">Marketing Communications</Label>
-                  <p className="text-sm text-neutral-medium">Receive promotional emails and offers</p>
-                </div>
-              </div>
-              <Switch
-                id="marketing"
-                checked={preferences.marketing}
-                onCheckedChange={(checked) =>
-                  setPreferences(prev => ({ ...prev, marketing: checked }))
-                }
-              />
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -452,5 +421,55 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({ user }
         </Button>
       </div>
     </div>
+  );
+};
+
+
+/** Offers and news by email (sent from our email platform); saved as soon as it's switched. */
+const MarketingEmails = ({ initial }: { initial: boolean }) => {
+  const [on, setOn] = useState(initial);
+  const [saving, setSaving] = useState(false);
+
+  const change = async (next: boolean) => {
+    setOn(next);
+    setSaving(true);
+    try {
+      await axiosInstance.put('/user/me/marketing-emails', { subscribed: next });
+      toast({ title: next ? "You'll get offers and news by email" : "You won't get offers and news by email" });
+    } catch {
+      setOn(!next);
+      toast({ title: "Couldn't save that", description: "Check your connection and try again.", variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Card className="border-neutral-lighter">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Mail className="h-5 w-5 text-brand-primary" />
+          Email
+        </CardTitle>
+        <CardDescription>
+          Account emails, like verification and your rewards, always reach you.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <Label htmlFor="marketing-emails" className="text-base">Offers and news</Label>
+            <p className="text-sm text-neutral-medium">New deals, StudentXmas drops and events, now and then.</p>
+          </div>
+          <Switch
+            id="marketing-emails"
+            checked={on}
+            disabled={saving}
+            onCheckedChange={change}
+            className={on ? 'bg-brand-primary' : 'bg-gray-300'}
+          />
+        </div>
+      </CardContent>
+    </Card>
   );
 };
