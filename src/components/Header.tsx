@@ -170,6 +170,12 @@ const Header: React.FC<HeaderProps> = ({ sx, offsetTop }) => {
             >
               Browse Offers
             </Link>
+            <Link
+              to="/drops"
+              className="text-sm lg:text-base font-medium text-gray-900 hover:text-brand-primary transition-colors px-3 py-2 whitespace-nowrap"
+            >
+              StudentXmas
+            </Link>
             {/* <Link
               to="/deals"
               className="text-sm lg:text-base font-medium text-gray-900 hover:text-brand-primary transition-colors px-3 py-2 whitespace-nowrap"
@@ -276,6 +282,15 @@ const Header: React.FC<HeaderProps> = ({ sx, offsetTop }) => {
                         className="block py-3 text-base font-medium text-neutral-900 hover:text-brand-primary"
                       >
                         Browse Offers
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/drops"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="block py-3 text-base font-medium text-neutral-900 hover:text-brand-primary"
+                      >
+                        StudentXmas
                       </Link>
                     </li>
                     <li>

@@ -29,6 +29,13 @@ import DataConsent from "./pages/legal/DataConsent";
 import ErrorPage from "./pages/ErrorPage";
 import HelpCenter from "./pages/HelpCenter";
 import NetworkStatus from "./components/NetworkStatus";
+import FestiveDrops from "./pages/FestiveDrops";
+import DropDetails from "./pages/DropDetails";
+import DropTerms from "./pages/DropTerms";
+import DropPass from "./pages/DropPass";
+import DropCrew from "./pages/DropCrew";
+import CrewInvite from "./pages/CrewInvite";
+import PassCheck from "./pages/PassCheck";
 
 const queryClient = new QueryClient();
 
@@ -95,6 +102,15 @@ const App = () => {
             {/* Anyone can read an offer; claiming it asks for sign-in on the page itself */}
             <Route path="/offer/:id" element={<OfferDetailsNew />} />
             <Route path="/offer-new/:id" element={<OfferDetailsNew />} />
+
+            {/* Festive Drops: public pages; actions ask for sign-in on the page */}
+            <Route path="/drops" element={<FestiveDrops />} />
+            <Route path="/drops/terms" element={<DropTerms />} />
+            <Route path="/drops/:id" element={<DropDetails />} />
+            <Route path="/drops/perks/:pickId/pass" element={<DropPass />} />
+            <Route path="/drops/perks/:pickId/crew" element={<DropCrew />} />
+            <Route path="/crew/:code" element={<CrewInvite />} />
+            <Route path="/pass-check" element={<PassCheck />} />
 
             {/* Routes that need a signed-in user */}
             <Route element={<DefaultLayout />}>

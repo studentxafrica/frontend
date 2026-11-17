@@ -10,6 +10,7 @@ import LatestOffers from "@/components/LatestCoupons";
 import ProviderHighlights from "@/components/ProviderHighlights";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
+import CampaignBanner from "@/components/drops/CampaignBanner";
 
 const Index = () => {
   const [stripVisible, setStripVisible] = React.useState(false);
@@ -21,6 +22,7 @@ const Index = () => {
       {/* Order runs: the promise, then the goods, then how to get them, then who vouches for it */}
       <main className="flex w-full flex-grow flex-col">
         <Hero />
+        <CampaignBanner />
         <FeaturedCoupons />
         <CategoryList />
         <LatestOffers />
