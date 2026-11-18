@@ -174,13 +174,13 @@ export const groupRewards = (drops: Drop[]): Reward[] => {
 /** The next drop of each reward, soonest first. */
 export const nextOfEachReward = (upcoming: Drop[]) => groupRewards(upcoming).filter((r) => !r.unlocked).map((r) => r.shown);
 
-/** "28 Verified Student Winners • Nov 18 - Dec 18 • All rewards valid for 10 days from unlock." */
+/** "28 Verified Winners • Nov 18 - Dec 18 • All rewards valid for 10 days from unlock." */
 export const campaignBannerText = (view: CampaignView) => {
 	const drops = [...view.upcoming, ...view.ended];
 	const winners = drops.reduce((sum, d) => sum + d.quantity * (d.kind === 'crew' ? d.crewSize ?? 1 : 1), 0);
 	const day = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: EAT });
 	const days = Math.max(...drops.map((d) => d.useWithinDays), 0);
-	return `${winners} Verified Student Winners • ${day(view.campaign.startsAt)} - ${day(view.campaign.endsAt)} • All rewards valid for ${days} days from unlock.`;
+	return `${winners} Verified Winners • ${day(view.campaign.startsAt)} - ${day(view.campaign.endsAt)} • All rewards valid for ${days} days from unlock.`;
 };
 
 export const kindLabel = (kind: DropKind) => (kind === 'airtime' ? 'Airtime' : kind === 'crew' ? 'Experience' : 'Voucher');

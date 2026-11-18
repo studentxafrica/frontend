@@ -31,7 +31,7 @@ const CampaignBanner = () => {
 				<span className="relative flex-1">
 					<span className="inline-block rounded-full bg-[#ffdd70] px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-[#24131d]">Now on · StudentXmas</span>
 					<span className="mt-2 block text-xl font-extrabold tracking-[-0.02em]">
-						{winners} Verified Student Winners • Airtime, vouchers, bowling and go-karting
+						{winners} Verified Winners • Airtime, vouchers, bowling and go-karting
 					</span>
 					<span className="mt-1 block text-sm text-white/85">
 						Next: {view.nextDrop.title}, {formatDropWhen(view.nextDrop.pickAt)}
