@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Gift, X } from "lucide-react";
-import { CampaignView, formatDropWhen, getCampaign } from "@/api/drops";
+import { CampaignView, campaignBannerText, getCampaign } from "@/api/drops";
 
 const DISMISSED_KEY = "announcement_strip_dismissed";
 
@@ -11,7 +11,7 @@ interface AnnouncementStripProps {
 }
 
 /**
- * Thin bar pinned above the header announcing StudentXmas and its next drop.
+ * Thin bar pinned above the header announcing StudentXmas (the tracker's banner line).
  * Hidden once the campaign has no drops left, or after the visitor closes it
  * (until the next drop comes round).
  */
@@ -73,12 +73,7 @@ const AnnouncementStrip: React.FC<AnnouncementStripProps> = ({ onVisibilityChang
                         <span className="absolute inline-flex h-full w-full rounded-full bg-[#ffdd70] opacity-75 animate-ping motion-reduce:animate-none" />
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ffdd70]" />
                     </span>
-                    <span className="text-xs sm:text-sm truncate">
-                        <span className="sm:hidden font-semibold">StudentXmas · </span>
-                        <span className="text-white/80">Next drop: </span>
-                        <span className="font-semibold">{next.title}</span>
-                        <span className="text-white/80">, {formatDropWhen(next.pickAt)}</span>
-                    </span>
+                    <span className="text-xs sm:text-sm font-semibold truncate">{campaignBannerText(view)}</span>
                     <span className="hidden md:inline-flex items-center gap-1 shrink-0 text-xs font-semibold underline-offset-2 group-hover:underline">
                         {joined ? "See your drops" : "Join StudentXmas"}
                         <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" aria-hidden />

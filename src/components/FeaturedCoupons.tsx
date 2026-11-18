@@ -7,11 +7,11 @@ import ServerError from "./ServerError";
 import OfferCard from "./offers/OfferCard";
 import SectionHeading from "./SectionHeading";
 import DropCard from "./drops/DropCard";
-import { Drop, getCampaign, nextOfEachPerk } from "@/api/drops";
+import { Drop, getCampaign, nextOfEachReward } from "@/api/drops";
 
 const FeaturedOffers = () => {
   const [featuredOffers, setFeaturedOffers] = React.useState<Offer[]>([]);
-  // StudentXmas leads the row: the next drop of each perk, soonest first
+  // StudentXmas leads the row: the next drop of each reward, soonest first
   const [drops, setDrops] = React.useState<Drop[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<{
@@ -38,7 +38,7 @@ const FeaturedOffers = () => {
 
   React.useEffect(() => {
     fetchFeaturedOffers();
-    getCampaign().then((campaign) => setDrops(nextOfEachPerk(campaign.upcoming))).catch(() => setDrops([]));
+    getCampaign().then((campaign) => setDrops(nextOfEachReward(campaign.upcoming))).catch(() => setDrops([]));
   }, []);
 
   const hasItems = drops.length > 0 || featuredOffers.length > 0;

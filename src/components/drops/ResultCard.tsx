@@ -16,8 +16,8 @@ const ResultCard = ({ drop, nextDrop, onJoin, joined = false }: {
 					<p className="text-sm text-text-secondary">{formatDropDay(drop.pickAt)} drop · {drop.title}</p>
 					<h2 className="text-2xl font-bold text-text-primary">You were picked!</h2>
 				</div>
-				<p className="text-text-secondary">Find your perk and what to do next in your profile.</p>
-				<Link to="/me?tab=drops" className="inline-flex h-11 items-center rounded-lg bg-brand-primary px-5 font-semibold text-white hover:bg-brand-primary/90">See my perk</Link>
+				<p className="text-text-secondary">Find your reward and what to do next in your profile.</p>
+				<Link to="/me?tab=drops" className="inline-flex h-11 items-center rounded-lg bg-brand-primary px-5 font-semibold text-white hover:bg-brand-primary/90">See my reward</Link>
 			</div>
 		);
 	}

@@ -95,7 +95,7 @@ const DropPass = () => {
 								</dl>
 							</div>
 						</div>
-						<p className="max-w-xs text-center text-sm text-text-secondary">Show this screen at the counter when you use your perk.</p>
+						<p className="max-w-xs text-center text-sm text-text-secondary">Show this screen at the counter when you use your reward.</p>
 					</>
 				)}
 			</main>

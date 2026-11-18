@@ -8,7 +8,7 @@ import ResultCard from '@/components/drops/ResultCard';
 import StatusCard from '@/components/drops/StatusCard';
 import OfferCardSkeleton from '@/components/offers/OfferCardSkeleton';
 import ServerError from '@/components/ServerError';
-import { CampaignView, getCampaign } from '@/api/drops';
+import { CampaignView, campaignBannerText, getCampaign, groupRewards } from '@/api/drops';
 
 /**
  * The StudentXmas campaign page. Everyone sees the drops;
@@ -28,6 +28,9 @@ const FestiveDrops = () => {
 	const total = view ? view.upcoming.length + view.ended.length : 0;
 	// A drop picked before the student joined says nothing about them; leave it out.
 	const showResult = joined && view?.latestResult && view.latestResult.result !== 'not_in';
+	const rewards = view ? groupRewards([...view.upcoming, ...view.ended]) : [];
+	const open = rewards.filter((r) => !r.unlocked);
+	const unlocked = rewards.filter((r) => r.unlocked);
 
 	return (
 		<div className="flex min-h-screen w-full flex-col items-center bg-gray-50">
@@ -68,7 +71,7 @@ const FestiveDrops = () => {
 							{view.member.picks > 0 && view.latestResult?.result !== 'picked' && (
 								<Link to="/me?tab=drops" className="flex items-center justify-between gap-4 rounded-xl border border-brand-primary bg-brand-primary/5 p-5 text-left hover:bg-brand-primary/10">
 									<span>
-										<span className="block font-semibold text-text-primary">You have {view.member.picks === 1 ? 'a perk' : `${view.member.picks} perks`} from StudentXmas</span>
+										<span className="block font-semibold text-text-primary">You've unlocked {view.member.picks === 1 ? 'a StudentXmas reward' : `${view.member.picks} StudentXmas rewards`}</span>
 										<span className="text-sm text-text-secondary">See what to do next in your profile.</span>
 									</span>
 									<span className="font-semibold text-brand-primary">View</span>
@@ -78,28 +81,32 @@ const FestiveDrops = () => {
 							<StatusCard view={view} onJoined={setView} />
 						</div>
 
+						<p className="rounded-full bg-brand-primary px-5 py-2.5 text-center text-sm font-semibold text-white">
+							{campaignBannerText(view)}
+						</p>
+
 						<section aria-labelledby="upcoming-heading" className="space-y-5">
 							<div className="flex items-baseline justify-between">
 								<h2 id="upcoming-heading" className="text-2xl font-bold text-text-primary">Coming up</h2>
-								<span className="text-sm text-text-secondary">{view.upcoming.length} to go</span>
+								<span className="text-sm text-text-secondary">{view.upcoming.length} {view.upcoming.length === 1 ? 'drop' : 'drops'} to go</span>
 							</div>
-							{view.upcoming.length === 0 ? (
-								<p className="border border-neutral-200 bg-white p-6 text-text-secondary">Every drop has been picked. Thanks for being part of StudentXmas.</p>
+							{open.length === 0 ? (
+								<p className="border border-neutral-200 bg-white p-6 text-text-secondary">Every reward has been unlocked. Thanks for being part of StudentXmas.</p>
 							) : (
 								<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-									{view.upcoming.map((drop) => <DropCard key={drop.id} drop={drop} />)}
+									{open.map((reward) => <DropCard key={reward.key} drop={reward.shown} unlocked={false} />)}
 								</div>
 							)}
 						</section>
 
-						{view.ended.length > 0 && (
+						{unlocked.length > 0 && (
 							<section aria-labelledby="ended-heading" className="space-y-5">
 								<div className="flex items-baseline justify-between border-t border-neutral-200 pt-8">
-									<h2 id="ended-heading" className="text-2xl font-bold text-text-primary">Ended drops</h2>
-									<span className="text-sm text-text-secondary">{view.ended.length} picked</span>
+									<h2 id="ended-heading" className="text-2xl font-bold text-text-primary">Unlocked</h2>
+									<span className="text-sm text-text-secondary">{unlocked.length} {unlocked.length === 1 ? 'reward' : 'rewards'}</span>
 								</div>
 								<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-									{view.ended.map((drop) => <DropCard key={drop.id} drop={drop} />)}
+									{unlocked.map((reward) => <DropCard key={reward.key} drop={reward.shown} unlocked />)}
 								</div>
 							</section>
 						)}

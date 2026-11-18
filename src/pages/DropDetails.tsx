@@ -7,7 +7,8 @@ import ResultCard from '@/components/drops/ResultCard';
 import StatusCard from '@/components/drops/StatusCard';
 import ServerError from '@/components/ServerError';
 import { toast } from '@/hooks/use-toast';
-import { CampaignView, Drop, countdownLabel, formatDropWhen, getCampaign, quantityLabel } from '@/api/drops';
+import { CampaignView, Drop, countdownLabel, formatDropWhen, getCampaign } from '@/api/drops';
+import { rewardBadge } from '@/components/drops/DropCard';
 import { dropPhoto } from '@/components/drops/DropVisual';
 
 const HERO_TINTS: Record<string, string> = {
@@ -74,18 +75,19 @@ const DropDetails = () => {
 									<div className="absolute inset-0 bg-neutral-950/30" />
 									<div className="absolute bottom-0 left-0 w-full p-6 sm:p-8">
 										<span className="mb-4 inline-block rounded-full bg-background/90 px-4 py-1 text-lg font-bold tracking-wide text-text-primary">
-											{drop.status === 'ended' ? 'ENDED' : drop.isNext ? `NEXT DROP · ${countdownLabel(drop.pickAt).toUpperCase()}` : countdownLabel(drop.pickAt).toUpperCase()}
+											{rewardBadge(drop, drop.status === 'ended')}
 										</span>
 										<h1 className="mb-2 text-3xl font-bold leading-tight text-text-inverted sm:text-4xl md:text-5xl">{drop.title}</h1>
 									</div>
 								</div>
 
-								<p className="text-lg leading-relaxed text-text-secondary">{drop.description}</p>
+								{drop.subtext && <p className="text-base font-semibold text-text-primary">{drop.subtext}</p>}
+								<p className="whitespace-pre-line text-lg leading-relaxed text-text-secondary">{drop.description}</p>
 
 								<div className="border-t border-border-subtle pt-8">
 									<h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-text-primary">Terms &amp; Conditions</h2>
 									<div className="rounded-lg border border-border-subtle bg-background-subtle p-6 text-sm leading-relaxed text-text-secondary">
-										{quantityLabel(drop)}, picked at random at {formatDropWhen(drop.pickAt)} (EAT) from verified students who have joined StudentXmas. If you're picked, we'll tell you on StudentX and by email. Use within {drop.useWithinDays} days. <Link to="/drops/terms" className="text-text-link underline">StudentXmas terms</Link>
+										Picked at random from {formatDropWhen(drop.pickAt)} (EAT) among verified members who have joined StudentXmas. If you unlock it, we'll email your confirmation and show it in your profile. Valid for {drop.useWithinDays} calendar days from the confirmation email; StudentX ID and National ID needed at the venue. <Link to="/drops/terms" className="text-text-link underline">StudentXmas terms</Link>
 									</div>
 								</div>
 							</div>

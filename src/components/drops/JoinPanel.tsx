@@ -34,11 +34,11 @@ const JoinPanel = ({ member, remaining, onJoined }: {
 				{member.hasPhone && (
 					<div className="flex justify-between px-4 py-3"><dt className="text-text-secondary">Airtime goes to</dt><dd className="font-semibold text-text-primary">{member.phone}</dd></div>
 				)}
-				<div className="flex justify-between px-4 py-3"><dt className="text-text-secondary">Use perks within</dt><dd className="font-semibold text-text-primary">10 days</dd></div>
+				<div className="flex justify-between px-4 py-3"><dt className="text-text-secondary">Rewards valid for</dt><dd className="font-semibold text-text-primary">10 days</dd></div>
 			</dl>
 			{!member.hasPhone && (
 				<div className="space-y-1.5">
-					<label htmlFor="drops-phone" className="text-sm font-medium text-text-primary">Safaricom number, for airtime perks</label>
+					<label htmlFor="drops-phone" className="text-sm font-medium text-text-primary">Safaricom number, for airtime rewards</label>
 					<input id="drops-phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="0712 345 678" value={phone}
 						onChange={(e) => setPhone(e.target.value)}
 						className="h-11 w-full rounded-lg border border-border-strong px-3 text-base focus:border-brand-primary focus:outline-none" />
@@ -46,7 +46,7 @@ const JoinPanel = ({ member, remaining, onJoined }: {
 			)}
 			<label className="flex items-start gap-3 text-sm leading-relaxed text-text-tertiary">
 				<input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#db0271]" />
-				<span>I agree to the <Link to="/drops/terms" className="text-text-link underline">StudentXmas terms</Link>, including that my first name may be shown on StudentX's Instagram if I'm picked.</span>
+				<span>I agree to the <Link to="/drops/terms" className="text-text-link underline">StudentXmas terms</Link>, including that my first name may be announced on StudentX's social media if I unlock a reward.</span>
 			</label>
 			{error && <p role="alert" className="text-sm text-text-danger">{error}</p>}
 			<Button onClick={join} disabled={!agreed || saving || (!member.hasPhone && !phone)} className="h-12 w-full bg-brand-primary text-base font-semibold text-white hover:bg-brand-primary/90">

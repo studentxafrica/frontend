@@ -17,6 +17,9 @@ export interface Drop {
 	title: string;
 	brand: string;
 	description: string | null;
+	/** Card badge and the line under the card title, e.g. "DROPS MON & FRI". */
+	badge: string | null;
+	subtext: string | null;
 	coverImage: string | null;
 	kind: DropKind;
 	quantity: number;
@@ -141,24 +144,44 @@ export const countdownLabel = (iso: string) => {
 	return days <= 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`;
 };
 
-/** Airtime is one perk however many times it drops; other perks are their own. */
-export const perkKey = (drop: Pick<Drop, 'kind' | 'title'>) => (drop.kind === 'airtime' ? 'airtime' : drop.title.toLowerCase());
+/** Drops that share a title are one reward card (the six KSh 250 airtime drops). */
+export const rewardKey = (drop: Pick<Drop, 'title'>) => drop.title.trim().toLowerCase();
 
-/** The next drop of each perk, soonest first. */
-export const nextOfEachPerk = (drops: Drop[]) => {
-	const seen = new Set<string>();
-	return drops.filter((drop) => {
-		const key = perkKey(drop);
-		if (seen.has(key)) return false;
-		seen.add(key);
-		return true;
+export interface Reward {
+	key: string;
+	drops: Drop[];
+	/** The drop the card shows: the reward's next drop, or its last one once all have ended. */
+	shown: Drop;
+	unlocked: boolean;
+}
+
+/** One card per reward: rewards still to drop first (soonest first), then unlocked ones (latest first). */
+export const groupRewards = (drops: Drop[]): Reward[] => {
+	const groups = new Map<string, Drop[]>();
+	for (const drop of [...drops].sort((a, b) => a.pickAt.localeCompare(b.pickAt))) {
+		const key = rewardKey(drop);
+		groups.set(key, [...(groups.get(key) ?? []), drop]);
+	}
+	const rewards = [...groups.entries()].map(([key, list]) => {
+		const next = list.find((d) => d.status === 'upcoming');
+		return { key, drops: list, shown: next ?? list[list.length - 1], unlocked: !next };
 	});
+	const open = rewards.filter((r) => !r.unlocked).sort((a, b) => a.shown.pickAt.localeCompare(b.shown.pickAt));
+	const done = rewards.filter((r) => r.unlocked).sort((a, b) => b.shown.pickAt.localeCompare(a.shown.pickAt));
+	return [...open, ...done];
 };
 
-export const quantityLabel = (drop: Pick_<Drop, 'kind' | 'quantity' | 'crewSize'>) =>
-	drop.kind === 'crew'
-		? `${drop.quantity} crew pass${drop.quantity === 1 ? '' : 'es'} for ${drop.crewSize}`
-		: `${drop.quantity} ${drop.quantity === 1 ? 'perk' : 'perks'}`;
+/** The next drop of each reward, soonest first. */
+export const nextOfEachReward = (upcoming: Drop[]) => groupRewards(upcoming).filter((r) => !r.unlocked).map((r) => r.shown);
+
+/** "28 Verified Winners • Nov 18 - Dec 18 • All rewards valid for 10 days from unlock." */
+export const campaignBannerText = (view: CampaignView) => {
+	const drops = [...view.upcoming, ...view.ended];
+	const winners = drops.reduce((sum, d) => sum + d.quantity * (d.kind === 'crew' ? d.crewSize ?? 1 : 1), 0);
+	const day = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: EAT });
+	const days = Math.max(...drops.map((d) => d.useWithinDays), 0);
+	return `${winners} Verified Winners • ${day(view.campaign.startsAt)} - ${day(view.campaign.endsAt)} • All rewards valid for ${days} days from unlock.`;
+};
 
 export const kindLabel = (kind: DropKind) => (kind === 'airtime' ? 'Airtime' : kind === 'crew' ? 'Experience' : 'Voucher');
 
