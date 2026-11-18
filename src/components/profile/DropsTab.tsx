@@ -19,7 +19,7 @@ const DropsTab = () => {
 	if (picks.length === 0) {
 		return (
 			<div className="border border-neutral-200 bg-white p-6 text-text-secondary">
-				No perks yet. <Link to="/drops" className="text-text-link underline">See StudentXmas</Link> to join and see what's coming up.
+				No rewards yet. <Link to="/drops" className="text-text-link underline">See StudentXmas</Link> to join and see what's coming up.
 			</div>
 		);
 	}

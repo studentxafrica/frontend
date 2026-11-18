@@ -60,7 +60,7 @@ const PassCheck = () => {
 						{result.firstName && (
 							<dl className="grid grid-cols-[6rem_1fr] gap-1.5 text-sm">
 								<dt className="text-text-secondary">Name</dt><dd className="font-semibold text-text-primary">{result.firstName}</dd>
-								<dt className="text-text-secondary">Perk</dt><dd className="font-semibold text-text-primary">{result.perk}</dd>
+								<dt className="text-text-secondary">Reward</dt><dd className="font-semibold text-text-primary">{result.perk}</dd>
 								{result.crewSize && (<><dt className="text-text-secondary">Crew</dt><dd className="font-semibold text-text-primary">{result.crewSize} people</dd></>)}
 								<dt className="text-text-secondary">Reference</dt><dd className="font-semibold text-text-primary">{result.reference}</dd>
 							</dl>

@@ -14,20 +14,20 @@ import type { Drop } from '@/api/drops';
  */
 export const dropPhoto = (drop: Pick<Drop, 'kind' | 'title'> & Partial<Pick<Drop, 'number' | 'description'>>) => {
 	const text = `${drop.title} ${drop.description ?? ''}`;
-	if (drop.kind === 'airtime') return (drop.number ?? 1) % 2 === 0 ? '/drops/airtime-alt.jpg' : '/drops/airtime.jpg';
-	if (/arcade/i.test(drop.title)) return '/drops/arcade.jpg';
-	if (/bowling/i.test(drop.title)) return '/drops/bowling.jpg';
-	if (/kart/i.test(drop.title)) return '/drops/karting.jpg';
-	if (/dining|food|restaurant|meal/i.test(text)) return '/drops/dining.jpg';
-	if (/fashion|cloth|fit|shopzetu|wear/i.test(text)) return '/drops/fashion.jpg';
-	return '/drops/airtime.jpg';
+	if (drop.kind === 'airtime') return (drop.number ?? 1) % 2 === 0 ? '/images/rewards/airtime-alt.jpg' : '/images/rewards/airtime.jpg';
+	if (/arcade/i.test(drop.title)) return '/images/rewards/arcade.jpg';
+	if (/bowling/i.test(drop.title)) return '/images/rewards/bowling.jpg';
+	if (/kart/i.test(drop.title)) return '/images/rewards/karting.jpg';
+	if (/dining|food|restaurant|meal/i.test(text)) return '/images/rewards/dining.jpg';
+	if (/fashion|cloth|fit|shopzetu|wear/i.test(text)) return '/images/rewards/fashion.jpg';
+	return '/images/rewards/airtime.jpg';
 };
 
 /** Cover for a drop: its uploaded photo, or a stock photo of the perk. Never a brand's logo. */
 const DropVisual = ({ drop, label, labelTone = 'light', className }: {
 	drop: Pick<Drop, 'kind' | 'title'> & Partial<Pick<Drop, 'number' | 'description'>> & { coverImage?: string | null };
 	label?: string;
-	labelTone?: 'light' | 'brand' | 'dark';
+	labelTone?: 'light' | 'brand' | 'dark' | 'muted';
 	className?: string;
 }) => (
 	<div className={cn('relative aspect-video w-full overflow-hidden bg-neutral-200', className)}>
@@ -43,6 +43,7 @@ const DropVisual = ({ drop, label, labelTone = 'light', className }: {
 				labelTone === 'brand' && 'bg-[#ffdd70] text-[#24131d]',
 				labelTone === 'dark' && 'bg-neutral-900 text-white',
 				labelTone === 'light' && 'bg-white/95 text-text-primary',
+				labelTone === 'muted' && 'bg-neutral-200 text-neutral-500',
 			)}>
 				{label}
 			</span>

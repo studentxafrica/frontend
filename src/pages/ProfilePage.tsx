@@ -277,7 +277,7 @@ const Profile = () => {
 										<TabsContent value="drops" className="mt-0 focus-visible:outline-none">
 											<div>
 												<h2 className="text-xl font-bold text-text-primary mb-1">StudentXmas</h2>
-												<p className="text-text-secondary mb-6">Perks you were picked for, and what to do next.</p>
+												<p className="text-text-secondary mb-6">Rewards you unlocked, and what to do next.</p>
 												<DropsTab />
 											</div>
 										</TabsContent>
