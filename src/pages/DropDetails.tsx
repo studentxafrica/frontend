@@ -87,7 +87,7 @@ const DropDetails = () => {
 								<div className="border-t border-border-subtle pt-8">
 									<h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-text-primary">Terms &amp; Conditions</h2>
 									<div className="rounded-lg border border-border-subtle bg-background-subtle p-6 text-sm leading-relaxed text-text-secondary">
-										Picked at random at {formatDropWhen(drop.pickAt)} (EAT) from verified students who have joined StudentXmas. If you're picked, we'll tell you on StudentX and by email. Use within {drop.useWithinDays} days. <Link to="/drops/terms" className="text-text-link underline">StudentXmas terms</Link>
+										Picked at random from {formatDropWhen(drop.pickAt)} (EAT) among verified members who have joined StudentXmas. If you unlock it, we'll email your confirmation and show it in your profile. Valid for {drop.useWithinDays} calendar days from the confirmation email; StudentX ID and National ID needed at the venue. <Link to="/drops/terms" className="text-text-link underline">StudentXmas terms</Link>
 									</div>
 								</div>
 							</div>
