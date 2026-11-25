@@ -93,7 +93,7 @@ const CampaignPopup = () => {
 				<button
 					type="button"
 					onClick={() => setOpen(true)}
-					className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-brand-primary py-2.5 pl-3 pr-4 text-sm font-bold text-white shadow-[0_6px_0_#ead8e0] transition duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
+					className="fixed bottom-5 left-5 z-40 inline-flex items-center gap-2 rounded-full bg-brand-primary py-2.5 pl-3 pr-4 text-sm font-bold text-white shadow-[0_6px_0_#ead8e0] transition duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
 				>
 					<span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-[#ffdd70] text-[#24131d]">
 						<Gift className="h-4 w-4" aria-hidden />
