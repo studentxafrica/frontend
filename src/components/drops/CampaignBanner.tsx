@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Gift } from 'lucide-react';
-import { CampaignView, formatDropWhen, getCampaign } from '@/api/drops';
+import { CampaignView, campaignWinners, formatDropWhen, getCampaign } from '@/api/drops';
 
 /**
- * Announces the running campaign on the home and deals pages. Every drop in it
+ * Announces the running campaign on the deals page. Every drop in it
  * lives on the campaign's own pages, so there is one place for each.
  */
 const CampaignBanner = () => {
@@ -16,7 +16,7 @@ const CampaignBanner = () => {
 
 	if (!view || !view.nextDrop) return null;
 	const joined = view.member.state === 'joined';
-	const winners = [...view.upcoming, ...view.ended].reduce((sum, d) => sum + d.quantity * (d.kind === 'crew' ? d.crewSize ?? 1 : 1), 0);
+	const winners = campaignWinners(view);
 
 	return (
 		<section aria-label="StudentXmas" className="w-full bg-white px-4 py-6">
