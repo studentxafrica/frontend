@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Gift, X } from 'lucide-react';
 import { Dialog, DialogClose, DialogDescription, DialogOverlay, DialogPortal, DialogTitle } from '@/components/ui/dialog';
@@ -57,6 +57,7 @@ const markSeen = (dropId: string) => {
 const CampaignPopup = () => {
 	const [view, setView] = useState<CampaignView | null>(null);
 	const [open, setOpen] = useState(false);
+	const contentRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		let active = true;
@@ -108,8 +109,15 @@ const CampaignPopup = () => {
 			<DialogPortal>
 				{/* Above the announcement strip, which sits over the header */}
 				<DialogOverlay className="z-[70] bg-[#24131d]/70 backdrop-blur-sm" />
-				<DialogPrimitive.Content className="fixed left-1/2 top-1/2 z-[70] max-h-[92vh] w-[calc(100%-2rem)] max-w-3xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[28px] bg-white shadow-[0_12px_0_#ead8e0] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 md:overflow-hidden">
-					<div className="grid md:grid-cols-[1.05fr_1fr]">
+				<DialogPrimitive.Content
+					ref={contentRef}
+					// Focus the dialog itself rather than its first button, so no button opens looking selected
+					onOpenAutoFocus={(event) => {
+						event.preventDefault();
+						contentRef.current?.focus();
+					}}
+					className="fixed left-1/2 top-1/2 z-[70] focus:outline-none max-h-[92vh] w-[calc(100%-2rem)] max-w-3xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[28px] bg-white shadow-[0_12px_0_#ead8e0] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 md:overflow-hidden">
+					<div className="grid md:grid-cols-2">
 						{/* Photos: the prizes, and the people winning them */}
 						<div className="relative grid h-56 grid-cols-3 grid-rows-2 gap-1.5 bg-[#24131d] p-1.5 sm:h-64 md:h-auto md:min-h-[26rem]">
 							<img
@@ -153,16 +161,16 @@ const CampaignPopup = () => {
 								<p className="text-sm text-neutral-600">{formatDropWhen(next.pickAt)}</p>
 							</div>
 
-							<div className="relative mt-auto flex flex-col gap-3 pt-6 sm:flex-row sm:items-center">
+							<div className="relative mt-auto flex flex-col gap-3 pt-6 sm:flex-row sm:flex-wrap sm:items-center">
 								<Link
 									to="/drops"
 									onClick={() => setOpen(false)}
-									className="inline-flex items-center justify-center gap-2 rounded-full bg-[#24131d] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#24131d]/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+									className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#24131d] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#24131d]/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
 								>
 									{joined ? 'See your drops' : 'Join StudentXmas'}
 									<ArrowRight className="h-4 w-4" aria-hidden />
 								</Link>
-								<DialogClose className="rounded-full px-4 py-3 text-sm font-semibold text-neutral-500 transition hover:text-[#24131d] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+								<DialogClose className="whitespace-nowrap rounded-full px-3 py-3 text-sm font-semibold text-neutral-500 transition hover:text-[#24131d] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
 									Maybe later
 								</DialogClose>
 							</div>
