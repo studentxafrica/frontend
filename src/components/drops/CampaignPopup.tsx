@@ -28,7 +28,7 @@ const readSeen = (): SeenRecord | null => {
 
 /**
  * Opens on a visitor's first visit, then again only when a new drop is up next
- * and a few days have passed. Members who've already joined aren't interrupted.
+ * and a few days have passed.
  */
 const shouldOpen = (view: CampaignView): boolean => {
 	if (!view.nextDrop || view.member.state === 'joined') return false;
@@ -81,10 +81,10 @@ const CampaignPopup = () => {
 		};
 	}, []);
 
-	if (!view || !view.nextDrop) return null;
+	// Only for people who haven't joined yet; members follow the campaign on its own pages
+	if (!view || !view.nextDrop || view.member.state === 'joined') return null;
 
 	const next = view.nextDrop;
-	const joined = view.member.state === 'joined';
 	const winners = campaignWinners(view);
 
 	return (
@@ -167,7 +167,7 @@ const CampaignPopup = () => {
 									onClick={() => setOpen(false)}
 									className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#24131d] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#24131d]/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
 								>
-									{joined ? 'See your drops' : 'Join StudentXmas'}
+									Join StudentXmas
 									<ArrowRight className="h-4 w-4" aria-hidden />
 								</Link>
 								<DialogClose className="whitespace-nowrap rounded-full px-3 py-3 text-sm font-semibold text-neutral-500 transition hover:text-[#24131d] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
