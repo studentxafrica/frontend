@@ -130,6 +130,10 @@ export const formatDropDay = (iso: string) =>
 export const formatDropTime = (iso: string) =>
 	new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: EAT });
 
+/** Everyone the campaign picks across all its drops; crew drops count each crew member. */
+export const campaignWinners = (view: CampaignView) =>
+	[...view.upcoming, ...view.ended].reduce((sum, d) => sum + d.quantity * (d.kind === 'crew' ? d.crewSize ?? 1 : 1), 0);
+
 export const formatDropWhen = (iso: string) => `${formatDropDay(iso)}, ${formatDropTime(iso)}`;
 
 /** Calendar days in Nairobi from today until the drop: 0 today, 1 tomorrow. */
